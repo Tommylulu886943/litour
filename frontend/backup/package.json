@@ -1,0 +1,11 @@
+{
+  "name": "gift-shop-frontend",
+  "version": "1.0.0",
+  "description": "台灣企業禮品選物網站前端",
+  "scripts": {
+    "serve": "npx serve -s -l 3000 ."
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}

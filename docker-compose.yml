@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  # 前端服務
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:3000"
+    networks:
+      - app-network
+    depends_on:
+      - backend
+
+  # 後端服務
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/giftshop
+    networks:
+      - app-network
+    depends_on:
+      - mongo
+
+  # MongoDB 服務
+  mongo:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+  # MongoDB Web 管理工具
+  mongo-express:
+    image: mongo-express
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_PORT=27017
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
