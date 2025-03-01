@@ -66,8 +66,14 @@
                 </div>
               </div>
               
-              <div class="price-slider-wrapper">
-                <div class="slider-track"></div>
+              <div class="range-slider-container">
+                <div class="range-track"></div>
+                <div class="range-progress" 
+                    :style="{
+                      left: ((sliderMinPrice - filterOptions.priceRange.min) / (filterOptions.priceRange.max - filterOptions.priceRange.min) * 100) + '%',
+                      width: ((sliderMaxPrice - sliderMinPrice) / (filterOptions.priceRange.max - filterOptions.priceRange.min) * 100) + '%'
+                    }">
+                </div>
                 <input 
                   type="range" 
                   v-model="sliderMinPrice"
@@ -820,7 +826,8 @@ export default {
 .products-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
+  gap: 25px;
+  margin: 20px 0;
 }
 
 /* 載入狀態 */
@@ -971,4 +978,72 @@ export default {
     border-radius: 4px;
   }
 }
+
+.range-slider-container {
+  position: relative;
+  width: 100%;
+  height: 5px;
+  margin: 35px 0;
+}
+
+.range-track {
+  position: absolute;
+  width: 100%;
+  height: 5px;
+  background-color: #ddd;
+  border-radius: 5px;
+}
+
+.range-progress {
+  position: absolute;
+  height: 5px;
+  background-color: var(--primary-color);
+  border-radius: 5px;
+}
+
+.range-slider {
+  position: absolute;
+  width: 100%;
+  height: 5px;
+  background: none;
+  pointer-events: none;
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+  top: 0;
+}
+
+.range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  pointer-events: auto;
+  margin-top: -6px;
+}
+
+.range-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.min-slider {
+  z-index: 2;
+}
+
+.max-slider {
+  z-index: 1;
+}
+
 </style>
