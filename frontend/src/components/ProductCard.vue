@@ -17,16 +17,16 @@
       <div v-if="product.isPersonalized" class="personalized-badge">
         可客製
       </div>
-
-      <!-- 收藏按鈕 -->
-      <button 
-        class="favorite-btn" 
-        :class="{ active: isFavorite }" 
-        @click.stop="toggleFavorite"
-      >
-        <i class="heart-icon"></i>
-      </button>
     </div>
+
+    <!-- 收藏按鈕 -->
+    <button 
+      class="favorite-btn" 
+      :class="{ active: isFavorite }" 
+      @click.stop="toggleFavorite"
+    >
+      <i class="heart-icon"></i>
+    </button>
     
     <div class="product-content">
       <div class="product-category">{{ product.category }}</div>

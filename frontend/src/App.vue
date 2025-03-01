@@ -248,14 +248,13 @@ export default {
       }
     };
     
+    // 組件掛載時初始化
     onMounted(() => {
       userStore.initAuth();
       cartStore.initCart();
       
-      // 在用戶已登入的情況下初始化收藏
-      if (userStore.isAuthenticated) {
-        favoriteStore.initFavorites();
-      }
+      // 註冊點擊事件
+      document.addEventListener('click', closeUserMenu);
     });
 
     onMounted(() => {
@@ -269,13 +268,12 @@ export default {
     onBeforeUnmount(() => {
       document.removeEventListener('click', closeUserMenu);
     });
-
+    
     return {
       isAuthenticated,
       user,
       cartItemCount,
       showUserMenu,
-      favoritesCount,
       searchQuery,
       logout,
       handleSearch
