@@ -4,7 +4,7 @@
       <div class="container">
         <div class="header-content">
           <h1 class="logo">
-            <router-link to="/">台灣企業禮品選物網站</router-link>
+            <router-link to="/">禮途</router-link>
           </h1>
           
           <!-- 搜索框 -->
@@ -28,6 +28,11 @@
           </nav>
           
           <div class="header-actions">
+
+            <router-link to="/favorites" class="favorites-btn">
+              收藏夾 <span v-if="favoritesCount > 0" class="favorites-count">{{ favoritesCount }}</span>
+            </router-link>
+
             <router-link to="/cart" class="cart-btn">
               購物車 <span class="cart-count">{{ cartItemCount }}</span>
             </router-link>
@@ -51,6 +56,109 @@
       </div>
     </header>
 
+    <header class="header">
+      <div class="container">
+        <div class="header-content">
+          <h1 class="logo">
+            <router-link to="/"></router-link>
+          </h1>
+          
+          <div class="nav-container">
+            <nav class="main-nav">
+              <div class="nav-item">
+                <router-link to="/new-bestsellers" class="nav-link">NEW & BESTSELLERS</router-link>
+                <div class="dropdown-menu">
+                  <div class="dropdown-columns">
+                    <div class="dropdown-column">
+                      <h3>熱門商品</h3>
+                      <ul>
+                        <li><router-link to="/new-arrivals">新品上市</router-link></li>
+                        <li><router-link to="/bestsellers">暢銷商品</router-link></li>
+                        <li><router-link to="/trending">當季流行</router-link></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="nav-item">
+                <router-link to="/gift-ideas" class="nav-link">GIFT IDEAS</router-link>
+                <div class="dropdown-menu">
+                  <div class="dropdown-columns">
+                    <div class="dropdown-column">
+                      <h3>按收禮人</h3>
+                      <ul>
+                        <li><router-link to="/gifts/women">Women</router-link></li>
+                        <li><router-link to="/gifts/men">Men</router-link></li>
+                        <li><router-link to="/gifts/best-friend">Best Friend</router-link></li>
+                        <li><router-link to="/gifts/teen">Teen</router-link></li>
+                        <li><router-link to="/gifts/kids">Kids</router-link></li>
+                        <li><router-link to="/gifts/babies">Babies</router-link></li>
+                      </ul>
+                    </div>
+                    <div class="dropdown-column">
+                      <h3>按價格</h3>
+                      <ul>
+                        <li><router-link to="/price/100-up">$100 and up</router-link></li>
+                        <li><router-link to="/price/under-100">Under $100</router-link></li>
+                        <li><router-link to="/price/under-50">Under $50</router-link></li>
+                        <li><router-link to="/price/under-25">Under $25</router-link></li>
+                      </ul>
+                    </div>
+                    <div class="dropdown-column">
+                      <h3>按興趣</h3>
+                      <ul>
+                        <li><router-link to="/interests/art-crafts">Art & Crafts</router-link></li>
+                        <li><router-link to="/interests/cooking">Cooking</router-link></li>
+                        <li><router-link to="/interests/gardening">Gardening</router-link></li>
+                        <li><router-link to="/interests/tech">Tech</router-link></li>
+                        <li><router-link to="/interests/sports">Sports</router-link></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="nav-item">
+                <router-link to="/women" class="nav-link">WOMEN</router-link>
+                <div class="dropdown-menu">
+                  <!-- 女性禮品下拉菜單內容 -->
+                </div>
+              </div>
+              
+              <div class="nav-item">
+                <router-link to="/men" class="nav-link">MEN</router-link>
+                <div class="dropdown-menu">
+                  <!-- 男性禮品下拉菜單內容 -->
+                </div>
+              </div>
+              
+              <div class="nav-item">
+                <router-link to="/baby-kids" class="nav-link">BABY & KIDS</router-link>
+                <div class="dropdown-menu">
+                  <!-- 嬰兒和兒童禮品下拉菜單內容 -->
+                </div>
+              </div>
+              
+              <div class="nav-item">
+                <router-link to="/occasions" class="nav-link">OCCASIONS & HOLIDAYS</router-link>
+                <div class="dropdown-menu">
+                  <!-- 場合和節日禮品下拉菜單內容 -->
+                </div>
+              </div>
+              
+              <div class="nav-item">
+                <router-link to="/brands" class="nav-link">BY BRAND</router-link>
+                <div class="dropdown-menu">
+                  <!-- 品牌分類下拉菜單內容 -->
+                </div>
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </header>
+
     <main class="main">
       <router-view />
     </main>
@@ -60,7 +168,7 @@
         <div class="footer-content">
           <div class="footer-section">
             <h3 class="footer-title">關於我們</h3>
-            <p>台灣企業禮品選物網站是專業的企業禮品供應商，提供高品質的客製化禮品與贈品服務，幫助企業提升品牌價值。</p>
+            <p>禮途有限公司是專業的企業禮品供應商，提供高品質的客製化禮品與贈品服務，幫助企業提升品牌價值。</p>
           </div>
           
           <div class="footer-section">
@@ -76,15 +184,15 @@
           <div class="footer-section">
             <h3 class="footer-title">聯絡我們</h3>
             <div class="contact-info">
-              <p>📍 台北市信義區松仁路100號</p>
+              <p>📍 基隆市中山區中山里中山一路157號 </p>
               <p>📞 (02) 2345-6789</p>
-              <p>📧 info@giftshop.com.tw</p>
+              <p>📧 litour@gmail.com</p>
             </div>
           </div>
         </div>
         
         <div class="footer-bottom">
-          <p>&copy; 2025 台灣企業禮品選物網站 版權所有</p>
+          <p>&copy; 2025 禮途有限公司 版權所有</p>
         </div>
       </div>
     </footer>
@@ -96,6 +204,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from './store/userStore';
 import { useCartStore } from './store/cartStore';
+import { useFavoriteStore } from './store/favoriteStore';
 
 export default {
   name: 'App',
@@ -103,7 +212,9 @@ export default {
     const router = useRouter();
     const userStore = useUserStore();
     const cartStore = useCartStore();
-    
+    const favoriteStore = useFavoriteStore();
+    const favoritesCount = computed(() => favoriteStore.totalFavorites);
+
     const showUserMenu = ref(false);
     const searchQuery = ref('');
     
@@ -145,6 +256,13 @@ export default {
       // 註冊點擊事件
       document.addEventListener('click', closeUserMenu);
     });
+
+    onMounted(() => {
+      // 如果已登入，加載收藏
+      if (userStore.isAuthenticated) {
+        favoriteStore.initFavorites();
+      }
+    });
     
     // 組件銷毀前清理
     onBeforeUnmount(() => {
@@ -165,6 +283,31 @@ export default {
 </script>
 
 <style>
+.favorites-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.3s;
+  font-weight: 600;
+  background-color: #f5f5f5;
+  color: var(--text-color);
+}
+
+.favorites-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.favorites-count {
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
 :root {
   --primary-color: #4CAF50;
   --secondary-color: #2196F3;

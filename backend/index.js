@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const productRoutes = require('./routes/productRoutes');
 const authRoutes = require('./routes/authRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const favoriteRoutes = require('./routes/favoriteRoutes');
 
 // 加載環境變量
 dotenv.config();
@@ -48,6 +49,7 @@ app.get('/api', (req, res) => {
 app.use('/api/products', productRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/favorites', favoriteRoutes);
 
 // 初始化示例數據的路由
 app.post('/api/seed', async (req, res) => {

@@ -41,47 +41,52 @@
           <!-- 價格範圍 -->
           <div class="filter-section">
             <h3 class="filter-title">價格</h3>
-            <div class="price-inputs">
-              <div class="price-input">
-                <span class="currency">$</span>
+            <div class="price-slider-container">
+              <div class="price-inputs">
+                <div class="price-input">
+                  <span class="currency">$</span>
+                  <input 
+                    type="number" 
+                    v-model="localMinPrice"
+                    placeholder="0"
+                    min="0"
+                    @change="updatePriceRange"
+                  >
+                </div>
+                <span class="price-separator">–</span>
+                <div class="price-input">
+                  <span class="currency">$</span>
+                  <input 
+                    type="number" 
+                    v-model="localMaxPrice"
+                    :placeholder="filterOptions.priceRange.max"
+                    :min="localMinPrice || 0"
+                    @change="updatePriceRange"
+                  >
+                </div>
+              </div>
+              
+              <div class="price-slider-wrapper">
+                <div class="slider-track"></div>
                 <input 
-                  type="number" 
-                  v-model="localMinPrice"
-                  placeholder="0"
-                  min="0"
+                  type="range" 
+                  v-model="sliderMinPrice"
+                  :min="filterOptions.priceRange.min" 
+                  :max="filterOptions.priceRange.max"
+                  @input="handleMinSliderChange"
                   @change="updatePriceRange"
+                  class="range-slider min-slider"
+                >
+                <input 
+                  type="range" 
+                  v-model="sliderMaxPrice"
+                  :min="filterOptions.priceRange.min" 
+                  :max="filterOptions.priceRange.max"
+                  @input="handleMaxSliderChange"
+                  @change="updatePriceRange"
+                  class="range-slider max-slider"
                 >
               </div>
-              <span class="price-separator">–</span>
-              <div class="price-input">
-                <span class="currency">$</span>
-                <input 
-                  type="number" 
-                  v-model="localMaxPrice"
-                  :placeholder="filterOptions.priceRange.max"
-                  :min="localMinPrice || 0"
-                  @change="updatePriceRange"
-                >
-              </div>
-            </div>
-            
-            <div class="price-slider">
-              <input 
-                type="range" 
-                v-model="sliderMinPrice"
-                :min="filterOptions.priceRange.min" 
-                :max="filterOptions.priceRange.max"
-                @input="handleMinSliderChange"
-                @change="updatePriceRange"
-              >
-              <input 
-                type="range" 
-                v-model="sliderMaxPrice"
-                :min="filterOptions.priceRange.min" 
-                :max="filterOptions.priceRange.max"
-                @input="handleMaxSliderChange"
-                @change="updatePriceRange"
-              >
               <div class="price-range-values">
                 <span>$0</span>
                 <span class="range-values">

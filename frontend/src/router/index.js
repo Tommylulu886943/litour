@@ -68,6 +68,12 @@ const router = createRouter({
       path: '/search',
       name: 'search',
       component: () => import('../views/ProductsView.vue')
+    },
+    {
+      path: '/favorites',
+      name: 'favorites',
+      component: () => import('../views/FavoritesView.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 });
