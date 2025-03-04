@@ -16,39 +16,44 @@
               @keyup.enter="handleSearch"
             >
             <button @click="handleSearch" class="search-btn">
-              🔍
+              <i class="search-icon">🔍</i>
             </button>
           </div>
-          
+
           <nav class="nav">
             <router-link to="/" class="nav-link">首頁</router-link>
             <router-link to="/products" class="nav-link">所有商品</router-link>
             <router-link to="/about" class="nav-link">關於我們</router-link>
             <router-link to="/contact" class="nav-link">聯絡我們</router-link>
           </nav>
-          
+        
           <div class="header-actions">
-
             <router-link to="/favorites" class="favorites-btn">
-              收藏夾 <span v-if="favoritesCount > 0" class="favorites-count">{{ favoritesCount }}</span>
+              <i class="heart-icon"></i>
+              <span>收藏夾</span>
+              <span v-if="favoritesCount > 0" class="favorites-count">{{ favoritesCount }}</span>
             </router-link>
 
             <router-link to="/cart" class="cart-btn">
-              購物車 <span class="cart-count">{{ cartItemCount }}</span>
+              <i class="cart-icon"></i>
+              <span>購物車</span>
+              <span class="cart-count">{{ cartItemCount }}</span>
             </router-link>
             
             <div v-if="isAuthenticated" class="user-dropdown">
-              <button class="user-btn" @click="showUserMenu = !showUserMenu">
+              <button class="user-btn">
+                <i class="user-icon"></i>
                 {{ user.name }}
               </button>
               
-              <div v-if="showUserMenu" class="dropdown-menu">
+              <div v-if="showUserMenu" class="dropdown-menu user-menu">
                 <router-link to="/profile" class="dropdown-item">個人中心</router-link>
                 <a href="#" @click.prevent="logout" class="dropdown-item">登出</a>
               </div>
             </div>
             
             <router-link v-else to="/login" class="login-btn">
+              <i class="login-icon"></i>
               登入
             </router-link>
           </div>
@@ -56,108 +61,85 @@
       </div>
     </header>
 
-    <header class="header">
+    <div class="category-nav">
       <div class="container">
-        <div class="header-content">
-          <h1 class="logo">
-            <router-link to="/"></router-link>
-          </h1>
-          
-          <div class="nav-container">
-            <nav class="main-nav">
-              <div class="nav-item">
-                <router-link to="/new-bestsellers" class="nav-link">NEW & BESTSELLERS</router-link>
-                <div class="dropdown-menu">
-                  <div class="dropdown-columns">
-                    <div class="dropdown-column">
-                      <h3>熱門商品</h3>
-                      <ul>
-                        <li><router-link to="/new-arrivals">新品上市</router-link></li>
-                        <li><router-link to="/bestsellers">暢銷商品</router-link></li>
-                        <li><router-link to="/trending">當季流行</router-link></li>
-                      </ul>
-                    </div>
-                  </div>
+        <nav class="main-nav">
+          <div class="nav-item">
+            <router-link to="/new-bestsellers" class="nav-link">NEW & BESTSELLERS</router-link>
+            <div class="dropdown-menu">
+              <div class="dropdown-columns">
+                <div class="dropdown-column">
+                  <h3>熱門商品</h3>
+                  <ul>
+                    <li><router-link to="/new-arrivals">新品上市</router-link></li>
+                    <li><router-link to="/bestsellers">暢銷商品</router-link></li>
+                    <li><router-link to="/trending">當季流行</router-link></li>
+                  </ul>
                 </div>
               </div>
-              
-              <div class="nav-item">
-                <router-link to="/gift-ideas" class="nav-link">GIFT IDEAS</router-link>
-                <div class="dropdown-menu">
-                  <div class="dropdown-columns">
-                    <div class="dropdown-column">
-                      <h3>按收禮人</h3>
-                      <ul>
-                        <li><router-link to="/gifts/women">Women</router-link></li>
-                        <li><router-link to="/gifts/men">Men</router-link></li>
-                        <li><router-link to="/gifts/best-friend">Best Friend</router-link></li>
-                        <li><router-link to="/gifts/teen">Teen</router-link></li>
-                        <li><router-link to="/gifts/kids">Kids</router-link></li>
-                        <li><router-link to="/gifts/babies">Babies</router-link></li>
-                      </ul>
-                    </div>
-                    <div class="dropdown-column">
-                      <h3>按價格</h3>
-                      <ul>
-                        <li><router-link to="/price/100-up">$100 and up</router-link></li>
-                        <li><router-link to="/price/under-100">Under $100</router-link></li>
-                        <li><router-link to="/price/under-50">Under $50</router-link></li>
-                        <li><router-link to="/price/under-25">Under $25</router-link></li>
-                      </ul>
-                    </div>
-                    <div class="dropdown-column">
-                      <h3>按興趣</h3>
-                      <ul>
-                        <li><router-link to="/interests/art-crafts">Art & Crafts</router-link></li>
-                        <li><router-link to="/interests/cooking">Cooking</router-link></li>
-                        <li><router-link to="/interests/gardening">Gardening</router-link></li>
-                        <li><router-link to="/interests/tech">Tech</router-link></li>
-                        <li><router-link to="/interests/sports">Sports</router-link></li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="nav-item">
-                <router-link to="/women" class="nav-link">WOMEN</router-link>
-                <div class="dropdown-menu">
-                  <!-- 女性禮品下拉菜單內容 -->
-                </div>
-              </div>
-              
-              <div class="nav-item">
-                <router-link to="/men" class="nav-link">MEN</router-link>
-                <div class="dropdown-menu">
-                  <!-- 男性禮品下拉菜單內容 -->
-                </div>
-              </div>
-              
-              <div class="nav-item">
-                <router-link to="/baby-kids" class="nav-link">BABY & KIDS</router-link>
-                <div class="dropdown-menu">
-                  <!-- 嬰兒和兒童禮品下拉菜單內容 -->
-                </div>
-              </div>
-              
-              <div class="nav-item">
-                <router-link to="/occasions" class="nav-link">OCCASIONS & HOLIDAYS</router-link>
-                <div class="dropdown-menu">
-                  <!-- 場合和節日禮品下拉菜單內容 -->
-                </div>
-              </div>
-              
-              <div class="nav-item">
-                <router-link to="/brands" class="nav-link">BY BRAND</router-link>
-                <div class="dropdown-menu">
-                  <!-- 品牌分類下拉菜單內容 -->
-                </div>
-              </div>
-            </nav>
+            </div>
           </div>
-        </div>
+          
+          <div class="nav-item">
+            <router-link to="/gift-ideas" class="nav-link">GIFT IDEAS</router-link>
+            <div class="dropdown-menu">
+              <div class="dropdown-columns">
+                <div class="dropdown-column">
+                  <h3>按收禮人</h3>
+                  <ul>
+                    <li><router-link to="/gifts/women">Women</router-link></li>
+                    <li><router-link to="/gifts/men">Men</router-link></li>
+                    <li><router-link to="/gifts/best-friend">Best Friend</router-link></li>
+                    <li><router-link to="/gifts/teen">Teen</router-link></li>
+                    <li><router-link to="/gifts/kids">Kids</router-link></li>
+                    <li><router-link to="/gifts/babies">Babies</router-link></li>
+                  </ul>
+                </div>
+                <div class="dropdown-column">
+                  <h3>按價格</h3>
+                  <ul>
+                    <li><router-link to="/price/100-up">$100 and up</router-link></li>
+                    <li><router-link to="/price/under-100">Under $100</router-link></li>
+                    <li><router-link to="/price/under-50">Under $50</router-link></li>
+                    <li><router-link to="/price/under-25">Under $25</router-link></li>
+                  </ul>
+                </div>
+                <div class="dropdown-column">
+                  <h3>按興趣</h3>
+                  <ul>
+                    <li><router-link to="/interests/art-crafts">Art & Crafts</router-link></li>
+                    <li><router-link to="/interests/cooking">Cooking</router-link></li>
+                    <li><router-link to="/interests/gardening">Gardening</router-link></li>
+                    <li><router-link to="/interests/tech">Tech</router-link></li>
+                    <li><router-link to="/interests/sports">Sports</router-link></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="nav-item">
+            <router-link to="/women" class="nav-link">WOMEN</router-link>
+          </div>
+          
+          <div class="nav-item">
+            <router-link to="/men" class="nav-link">MEN</router-link>
+          </div>
+          
+          <div class="nav-item">
+            <router-link to="/baby-kids" class="nav-link">BABY & KIDS</router-link>
+          </div>
+          
+          <div class="nav-item">
+            <router-link to="/occasions" class="nav-link">OCCASIONS & HOLIDAYS</router-link>
+          </div>
+          
+          <div class="nav-item">
+            <router-link to="/brands" class="nav-link">BY BRAND</router-link>
+          </div>
+        </nav>
       </div>
-    </header>
+    </div>
 
     <main class="main">
       <router-view />
@@ -283,63 +265,10 @@ export default {
 </script>
 
 <style>
-.favorites-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 15px;
-  border-radius: 4px;
-  text-decoration: none;
-  transition: all 0.3s;
-  font-weight: 600;
-  background-color: #f5f5f5;
-  color: var(--text-color);
-}
-
-.favorites-btn:hover {
-  background-color: #e0e0e0;
-}
-
-.favorites-count {
-  background-color: var(--primary-color);
-  color: white;
-  border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 12px;
-}
-
-:root {
-  --primary-color: #4CAF50;
-  --secondary-color: #2196F3;
-  --accent-color: #FFC107;
-  --text-color: #333;
-  --light-gray: #f5f5f5;
-  --border-color: #ddd;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Noto Sans TC', Arial, sans-serif;
-  line-height: 1.6;
-  color: var(--text-color);
-  background-color: var(--light-gray);
-}
-
-.container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 15px;
-}
-
+/* 粉紅色主題 App.vue 樣式 */
 .header {
   background-color: white;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 15px rgba(232, 74, 95, 0.1);
   padding: 15px 0;
   position: sticky;
   top: 0;
@@ -357,8 +286,28 @@ body {
 .logo a {
   color: var(--primary-color);
   text-decoration: none;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: bold;
+  position: relative;
+  display: inline-block;
+}
+
+.logo a::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 3px;
+  background-color: var(--primary-color);
+  bottom: -3px;
+  left: 0;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+.logo a:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .search-bar {
@@ -370,10 +319,17 @@ body {
 
 .search-bar input {
   width: 100%;
-  padding: 10px 40px 10px 15px;
+  padding: 12px 40px 12px 15px;
   border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border-radius: 50px;
   font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(232, 74, 95, 0.2);
 }
 
 .search-btn {
@@ -385,6 +341,17 @@ body {
   border: none;
   cursor: pointer;
   font-size: 1.2rem;
+  color: var(--primary-color);
+  padding: 8px;
+}
+
+.search-btn:hover {
+  background: none;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.search-icon {
+  font-style: normal;
 }
 
 .nav {
@@ -397,9 +364,28 @@ body {
   text-decoration: none;
   transition: color 0.3s;
   font-weight: 500;
+  position: relative;
 }
 
-.nav-link:hover, .nav-link.router-link-active {
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary-color);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+}
+
+.nav-link:hover::after, 
+.nav-link.router-link-active::after {
+  transform: scaleX(1);
+}
+
+.nav-link:hover, 
+.nav-link.router-link-active {
   color: var(--primary-color);
 }
 
@@ -409,15 +395,15 @@ body {
   gap: 15px;
 }
 
-.cart-btn, .login-btn, .user-btn {
+.cart-btn, .login-btn, .user-btn, .favorites-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 15px;
-  border-radius: 4px;
+  padding: 10px 15px;
+  border-radius: 50px;
   text-decoration: none;
   transition: all 0.3s;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .cart-btn {
@@ -426,7 +412,8 @@ body {
 }
 
 .cart-btn:hover {
-  background-color: #3d8b40;
+  background-color: var(--hover-color);
+  transform: translateY(-2px);
 }
 
 .cart-count {
@@ -435,6 +422,7 @@ body {
   border-radius: 50%;
   padding: 2px 6px;
   font-size: 12px;
+  font-weight: bold;
 }
 
 .login-btn {
@@ -445,6 +433,59 @@ body {
 
 .login-btn:hover {
   background-color: var(--light-gray);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.favorites-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.3s;
+  font-weight: 500;
+  background-color: white;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.favorites-btn:hover {
+  background-color: var(--light-gray);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.favorites-count {
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.heart-icon, .cart-icon, .user-icon, .login-icon {
+  font-size: 1.2rem;
+  font-style: normal;
+}
+
+.heart-icon::before {
+  content: '♥';
+  color: var(--primary-color);
+}
+
+.cart-icon::before {
+  content: '🛒';
+}
+
+.user-icon::before {
+  content: '👤';
+}
+
+.login-icon::before {
+  content: '🔑';
 }
 
 .user-dropdown {
@@ -459,39 +500,67 @@ body {
 }
 
 .user-btn:hover {
-  background-color: #1976D2;
+  background-color: var(--hover-color);
+  transform: translateY(-2px);
 }
 
-.dropdown-menu {
+.user-menu {
   position: absolute;
   top: 100%;
   right: 0;
   width: 180px;
   background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(232, 74, 95, 0.1);
   margin-top: 10px;
   z-index: 1000;
+  overflow: hidden;
 }
 
 .dropdown-item {
   display: block;
-  padding: 10px 15px;
+  padding: 12px 15px;
   color: var(--text-color);
   text-decoration: none;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, color 0.3s;
+  border-left: 3px solid transparent;
 }
 
 .dropdown-item:hover {
   background-color: var(--light-gray);
+  color: var(--primary-color);
+  border-left-color: var(--primary-color);
 }
 
+/* 類別導航 */
+.category-nav {
+  background-color: var(--light-gray);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.main-nav {
+  display: flex;
+  justify-content: space-between;
+}
+
+.main-nav .nav-link {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  padding: 15px 10px;
+}
+
+/* 頁面主體 */
 .main {
   min-height: calc(100vh - 140px - 200px);
 }
 
+/* 頁尾樣式 */
 .footer {
-  background-color: #333;
+  background-color: #2A363B;
   color: white;
   padding: 40px 0 20px;
 }
@@ -507,10 +576,23 @@ body {
   font-size: 1.2rem;
   margin-bottom: 15px;
   color: var(--accent-color);
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.footer-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background-color: var(--primary-color);
 }
 
 .footer-links {
   list-style: none;
+  padding: 0;
 }
 
 .footer-links li {
@@ -521,6 +603,18 @@ body {
   color: #ddd;
   text-decoration: none;
   transition: color 0.3s;
+  position: relative;
+  padding-left: 15px;
+}
+
+.footer-links a::before {
+  content: '❤';
+  position: absolute;
+  left: 0;
+  color: var(--primary-color);
+  font-size: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .footer-links a:hover {
@@ -539,6 +633,7 @@ body {
   color: #999;
 }
 
+/* 響應式設計 */
 @media (max-width: 992px) {
   .header-content {
     flex-direction: column;
@@ -567,6 +662,19 @@ body {
 @media (max-width: 768px) {
   .footer-content {
     grid-template-columns: 1fr;
+  }
+  
+  .category-nav {
+    overflow-x: auto;
+  }
+  
+  .main-nav {
+    width: max-content;
+    padding: 0 15px;
+  }
+  
+  .main-nav .nav-link {
+    white-space: nowrap;
   }
 }
 </style>

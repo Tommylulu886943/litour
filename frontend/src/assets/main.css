@@ -1,12 +1,19 @@
+/* 主色調替換 */
 :root {
-  --primary-color: #4CAF50;
-  --secondary-color: #2196F3;
-  --accent-color: #FFC107;
-  --text-color: #333;
-  --light-gray: #f5f5f5;
-  --border-color: #ddd;
+  --primary-color: #E84A5F;      /* 紅粉色 - 主要按鈕和重點元素 */
+  --secondary-color: #FF847C;    /* 淺粉色 - 次要按鈕和強調元素 */
+  --accent-color: #FECEAB;       /* 暖橘粉 - 點綴色調 */
+  --text-color: #2A363B;         /* 深灰藍 - 主要文字顏色 */
+  --light-gray: #FEF6F6;         /* 淺粉灰 - 背景色 */
+  --border-color: #FFDEDE;       /* 淺粉紅 - 邊框顏色 */
+  --hover-color: #D1495B;        /* 深紅色 - 滑鼠懸停顏色 */
+  --light-accent: #FAFAFA;       /* 超淺背景色 - 卡片和面板 */
+  --success-color: #99B898;      /* 綠色 - 成功提示 */
+  --warning-color: #FECEA8;      /* 橙色 - 警告提示 */
+  --error-color: #FF847C;        /* 紅色 - 錯誤提示 */
 }
 
+/* 其他全局樣式保持不變 */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -17,7 +24,7 @@ body {
   font-family: 'Noto Sans TC', Arial, sans-serif;
   line-height: 1.6;
   color: var(--text-color);
-  background-color: #fff;
+  background-color: var(--light-gray);
 }
 
 .container {
@@ -34,11 +41,12 @@ button {
   padding: 10px 15px;
   border-radius: 4px;
   font-size: 16px;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
 button:hover {
-  background-color: #3d8b40;
+  background-color: var(--hover-color);
+  transform: translateY(-2px);
 }
 
 .btn-secondary {
@@ -46,19 +54,20 @@ button:hover {
 }
 
 .btn-secondary:hover {
-  background-color: #1976D2;
+  background-color: #F1766E; /* 深一點的secondary色調 */
 }
 
 .card {
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 15px rgba(232, 74, 95, 0.1);
   overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
+  background-color: white;
 }
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px rgba(232, 74, 95, 0.15);
 }
 
 .product-grid {
@@ -74,7 +83,7 @@ button:hover {
 
 .price {
   font-weight: bold;
-  color: #e44d26;
+  color: var(--primary-color);
 }
 
 .original-price {
@@ -84,6 +93,7 @@ button:hover {
   margin-right: 10px;
 }
 
+/* 導航樣式更新 */
 .nav-container {
   position: relative;
 }
@@ -116,7 +126,7 @@ button:hover {
   left: 0;
   width: 800px;
   background-color: white;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 16px rgba(232, 74, 95, 0.1);
   opacity: 0;
   visibility: hidden;
   transform: translateY(10px);
@@ -124,6 +134,7 @@ button:hover {
   z-index: 1000;
   padding: 20px;
   border-radius: 4px;
+  border-top: 3px solid var(--primary-color);
 }
 
 .nav-item:hover .dropdown-menu {
