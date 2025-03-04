@@ -1,3 +1,156 @@
+<template>
+  <div class="checkout-page container">
+    <h1 class="page-title">結帳</h1>
+    
+    <!-- 空購物車 -->
+    <div v-if="!cartItems.length" class="empty-checkout">
+      <p>您的購物車是空的</p>
+      <router-link to="/products" class="back-to-shopping">
+        繼續購物
+      </router-link>
+    </div>
+    
+    <!-- 未登入提示 -->
+    <div v-else-if="!isAuthenticated" class="login-required">
+      <p>請先登入以繼續結帳</p>
+      <router-link :to="{name: 'login', query: { redirect: '/checkout' }}" class="login-button">
+        登入
+      </router-link>
+      <router-link to="/register" class="register-link">
+        還沒有帳號？立即註冊
+      </router-link>
+    </div>
+    
+    <!-- 結帳流程 -->
+    <div v-else class="checkout-content">
+      <div class="checkout-steps">
+        <!-- 步驟標頭 -->
+        <div class="steps-header">
+          <div 
+            v-for="(step, index) in steps" 
+            :key="index" 
+            :class="['step', { 
+              active: currentStep === index,
+              completed: currentStep > index 
+            }]"
+            @click="goToStep(index)"
+          >
+            <div class="step-number">
+              {{ index + 1 }}
+            </div>
+            <div class="step-title">{{ step }}</div>
+          </div>
+        </div>
+        
+        <div class="step-content">
+          <!-- 步驟 1: 購物車確認 -->
+          <div v-if="currentStep === 0" class="cart-overview">
+            <h2 class="step-title">確認購物車內容</h2>
+            
+            <div class="cart-items">
+              <div v-for="(item, index) in cartItems" :key="index" class="cart-item">
+                <div class="item-image">
+                  <img v-if="item.image" :src="item.image" :alt="item.name">
+                  <div v-else class="placeholder-image"></div>
+                </div>
+                
+                <div class="item-details">
+                  <h3 class="item-name">{{ item.name }}</h3>
+                  <p class="item-price">單價：NT$ {{ item.price }}</p>
+                  <p>數量：{{ item.quantity }}</p>
+                </div>
+                
+                <div class="item-total">NT$ {{ (item.price * item.quantity).toFixed(0) }}</div>
+              </div>
+            </div>
+            
+            <div class="cart-summary">
+              <div class="summary-row">
+                <span>小計</span>
+                <span>NT$ {{ cartTotal }}</span>
+              </div>
+              
+              <div class="summary-row">
+                <span>運費</span>
+                <span>NT$ {{ shippingCost }}</span>
+              </div>
+              
+              <div class="summary-total">
+                <span>總計</span>
+                <span>NT$ {{ orderTotal }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 步驟 2: 收貨地址 -->
+          <div v-if="currentStep === 1" class="shipping-address">
+            <h2 class="step-title">選擇收貨地址</h2>
+            
+            <div v-if="user.addresses && user.addresses.length" class="saved-addresses">
+              <h3>已保存的地址</h3>
+              
+              <div class="address-list">
+                <div 
+                  v-for="(address, index) in user.addresses" 
+                  :key="index"
+                  :class="['address-card', { selected: selectedAddressIndex === index }]"
+                  @click="selectAddress(index)"
+                >
+                  <div class="address-header">
+                    <h4>{{ address.fullName }}</h4>
+                    <span v-if="address.isDefault" class="default-badge">預設</span>
+                  </div>
+                  
+                  <div class="address-content">
+                    <p>{{ address.phone }}</p>
+                    <p>{{ address.addressLine1 }}</p>
+                    <p v-if="address.addressLine2">{{ address.addressLine2 }}</p>
+                    <p>{{ address.city }}, {{ address.postalCode }}</p>
+                  </div>
+                </div>
+                
+                <div class="address-card new-address" @click="showAddAddressForm = true">
+                  <div class="add-icon">+</div>
+                  <span>新增地址</span>
+                </div>
+              </div>
+            </div>
+            
+            <div v-else class="no-saved-addresses">
+              <p>您還沒有保存任何地址，請添加一個新地址</p>
+              <button @click="showAddAddressForm = true" class="add-address-btn">
+                添加地址
+              </button>
+            </div>
+            
+            <!-- 地址表單 -->
+            <div v-if="showAddAddressForm" class="address-form-modal">
+              <div class="modal-content">
+                <h3 class="modal-title">{{ editingAddressIndex === null ? '添加新地址' : '編輯地址' }}</h3>
+                
+                <form @submit.prevent="saveAddress" class="address-form">
+                  <div class="form-group">
+                    <label for="fullName">收件人姓名</label>
+                    <input type="text" id="fullName" v-model="addressForm.fullName" required>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="phone">電話</label>
+                    <input type="tel" id="phone" v-model="addressForm.phone" required>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="addressLine1">地址</label>
+                    <input type="text" id="addressLine1" v-model="addressForm.addressLine1" required>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="addressLine2">地址第二行 (選填)</label>
+                    <input type="text" id="addressLine2" v-model="addressForm.addressLine2">
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="city">城市</label>
                     <input type="text" id="city" v-model="addressForm.city" required>
                   </div>
                   
