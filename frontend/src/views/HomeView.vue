@@ -77,6 +77,12 @@ export default {
   },
   setup() {
     const productStore = useProductStore();
+
+    const retryFetchFeaturedProducts = () => {
+      loading.value = true;
+      error.value = null;
+      productStore.fetchFeaturedProducts();
+    };
     
     onMounted(() => {
       productStore.fetchFeaturedProducts();
@@ -85,7 +91,8 @@ export default {
     return {
       loading: productStore.loading,
       error: productStore.error,
-      featuredProducts: productStore.featuredProducts
+      featuredProducts: productStore.featuredProducts,
+      retryFetchFeaturedProducts
     };
   }
 }
@@ -198,5 +205,21 @@ export default {
 
 .feature-description {
   color: #666;
+}
+.retry-btn {
+  display: inline-block;
+  background-color: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  margin-top: 15px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.retry-btn:hover {
+  background-color: #3d8b40;
 }
 </style>

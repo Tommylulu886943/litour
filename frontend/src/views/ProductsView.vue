@@ -734,7 +734,7 @@ export default {
 .range-progress {
   position: absolute;
   height: 5px;
-  background-color: var(--primary-color);
+  background-color: #2196F3;
   border-radius: 5px;
 }
 
@@ -748,6 +748,7 @@ export default {
   appearance: none;
   outline: none;
   top: 0;
+  margin: 0;
 }
 
 .range-slider::-webkit-slider-thumb {
@@ -756,23 +757,25 @@ export default {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: var(--primary-color);
+  background: #2196F3;
   border: 2px solid white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   pointer-events: auto;
-  margin-top: -6px;
+  margin-top: -7px;
+  transform: translateX(0);
 }
 
 .range-slider::-moz-range-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: var(--primary-color);
+  background: #2196F3;
   border: 2px solid white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   pointer-events: auto;
+  transform: translateX(0);
 }
 
 .min-slider {
@@ -786,14 +789,14 @@ export default {
 .price-range-values {
   display: flex;
   justify-content: space-between;
-  margin-top: 10px;
+  margin-top: 15px;
   font-size: 0.9rem;
   color: #666;
 }
 
 .range-values {
   font-weight: 600;
-  color: var(--primary-color);
+  color: #2196F3;
 }
 
 /* 過濾選項 */
