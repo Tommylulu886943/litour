@@ -76,6 +76,15 @@
                 </div>
                 <input 
                   type="range" 
+                  v-model="sliderMinPrice"
+                  :min="filterOptions.priceRange.min" 
+                  :max="filterOptions.priceRange.max"
+                  @input="handleMinSliderChange"
+                  @change="updatePriceRange"
+                  class="range-slider min-slider"
+                >
+                <input 
+                  type="range" 
                   v-model="sliderMaxPrice"
                   :min="filterOptions.priceRange.min" 
                   :max="filterOptions.priceRange.max"
@@ -208,7 +217,7 @@
           <!-- 排序和篩選工具列 -->
           <div class="products-toolbar">
             <div class="products-count">
-              顯示 {{ products.length }} 個產品，共 {{ pagination.total }} 個結果
+              顯示 {{ pagination.total > 0 ? products.length : 0 }} 個產品，共 {{ pagination.total }} 個結果
             </div>
             
             <div class="sorting">
@@ -707,29 +716,71 @@ export default {
   color: #999;
 }
 
-.price-slider {
+.range-slider-container {
   position: relative;
-  height: 30px;
-  margin-bottom: 10px;
+  width: 100%;
+  height: 5px;
+  margin: 35px 0;
 }
 
-.price-slider input[type="range"] {
+.range-track {
+  position: absolute;
+  width: 100%;
+  height: 5px;
+  background-color: #ddd;
+  border-radius: 5px;
+}
+
+.range-progress {
+  position: absolute;
+  height: 5px;
+  background-color: var(--primary-color);
+  border-radius: 5px;
+}
+
+.range-slider {
   position: absolute;
   width: 100%;
   height: 5px;
   background: none;
   pointer-events: none;
   -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+  top: 0;
 }
 
-.price-slider input[type="range"]::-webkit-slider-thumb {
+.range-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  height: 15px;
-  width: 15px;
+  appearance: none;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: var(--primary-color);
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   pointer-events: auto;
+  margin-top: -6px;
+}
+
+.range-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.min-slider {
+  z-index: 2;
+}
+
+.max-slider {
+  z-index: 1;
 }
 
 .price-range-values {
@@ -816,8 +867,9 @@ export default {
 /* 產品列表 */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 25px;
+  margin: 0;
 }
 
 /* 載入狀態 */
@@ -941,6 +993,7 @@ export default {
 @media (max-width: 768px) {
   .products-grid {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
   }
   
   .products-toolbar {
@@ -953,6 +1006,7 @@ export default {
 @media (max-width: 576px) {
   .products-grid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
   }
   
   .page-numbers {
@@ -967,71 +1021,5 @@ export default {
   .next {
     border-radius: 4px;
   }
-}
-.range-slider-container {
-  position: relative;
-  width: 100%;
-  height: 5px;
-  margin: 35px 0;
-}
-
-.range-track {
-  position: absolute;
-  width: 100%;
-  height: 5px;
-  background-color: #ddd;
-  border-radius: 5px;
-}
-
-.range-progress {
-  position: absolute;
-  height: 5px;
-  background-color: var(--primary-color);
-  border-radius: 5px;
-}
-
-.range-slider {
-  position: absolute;
-  width: 100%;
-  height: 5px;
-  background: none;
-  pointer-events: none;
-  -webkit-appearance: none;
-  appearance: none;
-  outline: none;
-  top: 0;
-}
-
-.range-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--primary-color);
-  border: 2px solid white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  pointer-events: auto;
-  margin-top: -6px;
-}
-
-.range-slider::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--primary-color);
-  border: 2px solid white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  pointer-events: auto;
-}
-
-.min-slider {
-  z-index: 2;
-}
-
-.max-slider {
-  z-index: 1;
 }
 </style>
