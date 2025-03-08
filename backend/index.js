@@ -42,7 +42,7 @@ app.use((req, res, next) => {
 
 // API 路由
 app.get('/api', (req, res) => {
-  res.json({ message: '台灣企業禮品選物網站 API 服務運行中！' });
+  res.json({ message: '禮途 API 服務運行中！' });
 });
 
 // 使用路由

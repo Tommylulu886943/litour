@@ -1,7 +1,7 @@
 {
   "name": "gift-shop-backend",
   "version": "1.0.0",
-  "description": "台灣企業禮品選物網站後端",
+  "description": "禮途網站後端",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"

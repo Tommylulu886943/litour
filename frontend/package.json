@@ -1,7 +1,7 @@
 {
   "name": "gift-shop-frontend",
   "version": "1.0.0",
-  "description": "台灣企業禮品選物網站前端",
+  "description": "禮途網站前端",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

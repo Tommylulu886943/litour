@@ -84,7 +84,7 @@
               </div>
               <div class="info-row">
                 <span class="label">戶名:</span>
-                <span class="value">台灣企業禮品選物網</span>
+                <span class="value">禮途禮品選物網</span>
               </div>
               <div class="info-row">
                 <span class="label">帳號:</span>
