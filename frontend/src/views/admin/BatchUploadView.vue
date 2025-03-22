@@ -564,57 +564,70 @@
       
       // 提交所有商品
       const submitProducts = async () => {
-        // 驗證所有必填字段
-        let hasError = false;
+        if (manualProducts.value.length === 0) {
+          error.value = '請添加至少一個商品';
+          return;
+        }
+        
+        // 表單驗證
+        let hasValidationError = false;
         manualProducts.value.forEach((product, index) => {
-          if (!product.name || !product.price || !product.stock || 
-              !product.description || !product.category || !product.subcategory || 
-              !product.deliveryTime) {
-            error.value = `商品 #${index + 1} 缺少必填字段`;
-            hasError = true;
+          if (!product.name || !product.price || !product.stock) {
+            error.value = `商品 #${index + 1} 缺少必填欄位（名稱、價格或庫存）`;
+            hasValidationError = true;
           }
         });
         
-        if (hasError) return;
-        
-        submitting.value = true;
+        if (hasValidationError) return;
         
         try {
-          // 準備提交的商品數據
+          submitting.value = true;
+          error.value = '';
+          
+          // 顯示更多日誌以幫助調試
+          console.log('準備提交的商品數據:', manualProducts.value);
+          
+          // 準備提交的數據
           const productsToSubmit = manualProducts.value.map(product => {
-            // 將規格數組轉換為對象
-            const specificationsObj = {};
-            product.specifications.forEach(spec => {
-              if (spec.key && spec.value) {
-                specificationsObj[spec.key] = spec.value;
-              }
-            });
+            // 處理標籤
+            const tags = product.tags ? product.tags.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
             
-            // 分割標籤
-            const tags = product.tagsInput ? product.tagsInput.split(',').map(tag => tag.trim()) : [];
+            // 處理規格
+            const specificationsObj = {};
+            if (product.specifications && product.specifications.length > 0) {
+              product.specifications.forEach(spec => {
+                if (spec.name && spec.value) {
+                  specificationsObj[spec.name] = spec.value;
+                }
+              });
+            }
             
             return {
               name: product.name,
-              price: Number(product.price),
-              discountPrice: product.discountPrice ? Number(product.discountPrice) : 0,
-              stock: Number(product.stock),
-              description: product.description,
-              category: product.category,
-              subcategory: product.subcategory,
-              deliveryTime: Number(product.deliveryTime),
-              forGender: product.forGender,
-              isPersonalized: product.isPersonalized,
-              minimumOrderQuantity: Number(product.minimumOrderQuantity),
+              price: Number(product.price) || 0,  // 確保轉換為數字
+              discountPrice: product.discountPrice ? Number(product.discountPrice) || 0 : 0,
+              stock: Number(product.stock) || 0,  // 確保轉換為數字
+              description: product.description || '',
+              category: product.category || '',
+              subcategory: product.subcategory || '',
+              deliveryTime: Number(product.deliveryTime) || 1,
+              forGender: product.forGender || '所有',
+              isPersonalized: Boolean(product.isPersonalized),
+              minimumOrderQuantity: Number(product.minimumOrderQuantity) || 1,
               tags,
               specifications: specificationsObj,
-              images: product.selectedImages
+              images: product.selectedImages || []
             };
           });
+          
+          console.log('轉換後準備發送的數據:', productsToSubmit);
           
           // 發送請求
           const response = await axios.post('/api/admin/batch-upload-products', {
             products: productsToSubmit
           });
+          
+          console.log('伺服器回應:', response.data);
           
           // 顯示成功消息
           success.value = `成功上傳 ${response.data.count} 個商品`;
@@ -630,7 +643,11 @@
           window.scrollTo(0, 0);
         } catch (err) {
           console.error('提交商品錯誤:', err);
-          error.value = err.response?.data?.message || '提交商品失敗';
+          // 顯示更詳細的錯誤信息
+          error.value = err.response?.data?.message || 
+                        (err.message ? `錯誤: ${err.message}` : '提交商品失敗');
+          // 顯示更多錯誤詳情到控制台
+          console.error('詳細錯誤信息:', err.response?.data || err);
           window.scrollTo(0, document.body.scrollHeight);
         } finally {
           submitting.value = false;
