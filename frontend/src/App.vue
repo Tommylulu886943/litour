@@ -41,14 +41,15 @@
             </router-link>
             
             <div v-if="isAuthenticated" class="user-dropdown">
-              <button class="user-btn">
+              <button class="user-btn" @click.stop="toggleUserMenu">
                 <i class="user-icon"></i>
-                {{ user.name }}
+                {{ user.name || '會員' }}
               </button>
               
-              <div v-if="showUserMenu" class="dropdown-menu user-menu">
-                <router-link to="/profile" class="dropdown-item">個人中心</router-link>
-                <a href="#" @click.prevent="logout" class="dropdown-item">登出</a>
+              <div v-show="showUserMenu" class="user-menu">
+                <router-link to="/profile" class="menu-item">個人中心</router-link>
+                <router-link v-if="isAdmin" to="/admin/batch-upload" class="menu-item">批量上傳</router-link>
+                <a href="#" @click.prevent="logout" class="menu-item">登出</a>
               </div>
             </div>
             
@@ -203,7 +204,8 @@ export default {
     // 用戶資訊
     const isAuthenticated = computed(() => userStore.isAuthenticated);
     const user = computed(() => userStore.user || {});
-    
+    const isAdmin = computed(() => userStore.isAdmin);
+
     // 購物車資訊
     const cartItemCount = computed(() => cartStore.totalItems);
     
@@ -231,25 +233,35 @@ export default {
     };
     
     // 組件掛載時初始化
-    onMounted(() => {
-      userStore.initAuth();
+    onMounted(async () => {
+      await userStore.initAuth();
       cartStore.initCart();
+      
+      // 如果已登入，加載收藏
+      if (userStore.isAuthenticated) {
+        favoriteStore.initFavorites();
+        // 確保用戶資料完整
+        await userStore.fetchUserProfile();
+      }
       
       // 註冊點擊事件
       document.addEventListener('click', closeUserMenu);
     });
 
-    onMounted(() => {
-      // 如果已登入，加載收藏
-      if (userStore.isAuthenticated) {
-        favoriteStore.initFavorites();
-      }
-    });
-    
     // 組件銷毀前清理
     onBeforeUnmount(() => {
       document.removeEventListener('click', closeUserMenu);
     });
+
+    // 點擊 User Menu
+    const toggleUserMenu = () => {
+      showUserMenu.value = !showUserMenu.value;
+      console.log('用戶選單狀態:', showUserMenu.value);
+      
+      setTimeout(() => {
+        console.log('延遲檢查選單狀態:', showUserMenu.value);
+      }, 100);
+    };
     
     return {
       isAuthenticated,
@@ -258,7 +270,10 @@ export default {
       showUserMenu,
       searchQuery,
       logout,
-      handleSearch
+      handleSearch,
+      toggleUserMenu,
+      isAdmin,
+      favoritesCount,
     };
   }
 }
@@ -490,6 +505,7 @@ export default {
 
 .user-dropdown {
   position: relative;
+  display: inline-block;
 }
 
 .user-btn {
@@ -497,39 +513,36 @@ export default {
   color: white;
   border: none;
   cursor: pointer;
-}
-
-.user-btn:hover {
-  background-color: var(--hover-color);
-  transform: translateY(-2px);
+  padding: 10px 15px;
+  border-radius: 50px;
+  font-size: 1rem;
 }
 
 .user-menu {
   position: absolute;
   top: 100%;
   right: 0;
-  width: 180px;
+  width: 120px;
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(232, 74, 95, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   margin-top: 10px;
-  z-index: 1000;
-  overflow: hidden;
+  z-index: 9999;
+  padding: 5px 0;
 }
 
-.dropdown-item {
+.menu-item {
   display: block;
-  padding: 12px 15px;
-  color: var(--text-color);
+  padding: 8px 15px;
+  color: #333;
   text-decoration: none;
-  transition: background-color 0.3s, color 0.3s;
-  border-left: 3px solid transparent;
+  font-size: 14px;
+  text-align: left;
 }
 
-.dropdown-item:hover {
-  background-color: var(--light-gray);
+.menu-item:hover {
+  background-color: #f5f5f5;
   color: var(--primary-color);
-  border-left-color: var(--primary-color);
 }
 
 /* 類別導航 */
