@@ -2,10 +2,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 const productRoutes = require('./routes/productRoutes');
 const authRoutes = require('./routes/authRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const favoriteRoutes = require('./routes/favoriteRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+
 
 // 加載環境變量
 dotenv.config();
@@ -25,6 +28,9 @@ mongoose.connect(MONGODB_URI)
 // 中間件
 app.use(express.json());
 app.use(cookieParser());
+
+// 設置上傳圖片路徑
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // 允許跨域請求
 app.use((req, res, next) => {

@@ -78,6 +78,12 @@ const productSchema = new mongoose.Schema({
     type: String,
     enum: ['Men', 'Women', 'Unisex', 'Kids'],
     default: 'Unisex'
+  },
+  deliveryTime: {
+    type: Number,
+    default: 7,
+    min: 1,
+    description: '預計交貨時間（天）'
   }
 }, {
   timestamps: true

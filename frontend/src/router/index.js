@@ -74,6 +74,23 @@ const router = createRouter({
       name: 'favorites',
       component: () => import('../views/FavoritesView.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/search',
+      name: 'search',
+      component: () => import('../views/ProductsView.vue')
+    },
+    {
+      path: '/favorites',
+      name: 'favorites',
+      component: () => import('../views/FavoritesView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/admin/batch-upload',
+      name: 'admin-batch-upload',
+      component: () => import('../views/admin/BatchUploadView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true }
     }
   ]
 });
@@ -87,6 +104,11 @@ router.beforeEach((to, from, next) => {
     // 需要登錄但用戶未登錄，重定向到登錄頁面
     next({ name: 'login', query: { redirect: to.fullPath } });
   } 
+  // 檢查是否需要管理員權限
+  else if (to.matched.some(record => record.meta.requiresAdmin) && !userStore.isAdmin) {
+    // 需要管理員權限但用戶不是管理員，重定向到首頁
+    next({ name: 'home' });
+  }
   // 檢查是否為已登錄用戶隱藏的頁面
   else if (to.matched.some(record => record.meta.hideForAuth) && userStore.isAuthenticated) {
     // 用戶已登錄但嘗試訪問登錄/註冊頁面，重定向到首頁
