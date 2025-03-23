@@ -85,13 +85,11 @@ const uploadImages = multer({
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB 限制
 });
 
-// 確保只有管理員可以訪問這些路由
-router.use(protect, admin);
-
+// 公開路由 - 不需要身份驗證
 // @desc    下載商品上傳模板
 // @route   GET /api/admin/download-template
-// @access  Admin
-router.get('/download-template', (req, res) => {
+// @access  Public
+router.get('/download-template', async (req, res) => {
   try {
     // 創建工作簿和工作表
     const wb = XLSX.utils.book_new();
@@ -144,6 +142,9 @@ router.get('/download-template', (req, res) => {
     res.status(500).json({ message: '下載模板失敗', error: error.message });
   }
 });
+
+// 保護的路由 - 只有管理員可以訪問
+router.use(protect, admin);
 
 // @desc    處理 Excel 文件
 // @route   POST /api/admin/process-excel
