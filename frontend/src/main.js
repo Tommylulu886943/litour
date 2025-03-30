@@ -6,7 +6,7 @@ import './assets/main.css';
 import axios from 'axios';
 
 // 配置 axios 的基礎 URL
-axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 
 // 配置 axios 請求攔截器，從本地存儲獲取令牌
 axios.interceptors.request.use(config => {
