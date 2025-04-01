@@ -17,7 +17,7 @@ const app = express();
 const port = 3000;
 
 // 連接到 MongoDB
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://mongo:27017/giftshop';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://mongo:27136/giftshop';
 mongoose.connect(MONGODB_URI)
   .then(() => console.log('成功連接到 MongoDB'))
   .catch(err => {
