@@ -51,24 +51,12 @@
             
             <div class="form-group">
               <label for="phone">電話</label>
-              <input 
-                type="text" 
-                id="phone" 
-                v-model="user.phone" 
-                class="form-control"
-                placeholder="輸入您的電話號碼"
-              />
+              <input type="tel" id="phone" v-model="profileData.phone">
             </div>
             
             <div class="form-group">
               <label for="company">公司名稱</label>
-              <input 
-                type="text" 
-                id="company" 
-                v-model="user.company" 
-                class="form-control"
-                placeholder="輸入您的公司名稱"
-              />
+              <input type="text" id="company" v-model="profileData.company">
             </div>
             
             <div class="password-section">
@@ -251,26 +239,16 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue';
 import { useUserStore } from '@/store/userStore';
 import axios from 'axios';
-import { toast } from 'vue3-toastify';
 
 export default {
   name: 'ProfileView',
   setup() {
     const userStore = useUserStore();
     const activeTab = ref('profile');
-    const user = ref({
-      name: '',
-      email: '',
-      phone: '',
-      company: '',
-      password: '',
-      newPassword: '',
-      confirmPassword: '',
-    });
+    const user = computed(() => userStore.user || {});
     const isAuthenticated = computed(() => userStore.isAuthenticated);
-    const loading = ref(false);
-    const error = ref('');
-    const success = ref('');
+    const loading = computed(() => userStore.loading);
+    const error = computed(() => userStore.error);
     
     // 個人資料表單
     const profileData = reactive({
@@ -302,47 +280,31 @@ export default {
     
     // 更新個人資料
     const updateProfile = async () => {
-      loading.value = true;
-      error.value = '';
-      success.value = '';
+      // 如果有設置密碼但兩次輸入不一致，則不提交
+      if (profileData.password && profileData.password !== profileData.confirmPassword) {
+        return;
+      }
       
-      try {
-        const updateData = {
-          name: profileData.name,
-          phone: profileData.phone,
-          company: profileData.company,
-        };
-        
-        // 如果有填寫密碼相關欄位，則更新密碼
-        if (profileData.password && profileData.password !== profileData.confirmPassword) {
-          if (profileData.password !== profileData.confirmPassword) {
-            error.value = '兩次密碼輸入不一致';
-            loading.value = false;
-            return;
-          }
-          updateData.currentPassword = profileData.password;
-          updateData.newPassword = profileData.password;
-        }
-        
-        // 發送更新請求
-        const response = await axios.put('/api/users/profile', updateData);
-        
-        // 更新store中的用戶資料
-        userStore.updateUserProfile(response.data);
-        
-        // 顯示成功消息
-        success.value = '個人資料更新成功';
-        toast.success('個人資料更新成功');
-        
-        // 清除密碼欄位
+      // 準備提交的數據
+      const userData = {
+        name: profileData.name,
+        email: profileData.email,
+        phone: profileData.phone,
+        company: profileData.company
+      };
+      
+      // 只有當設置了密碼時才添加到提交數據中
+      if (profileData.password) {
+        userData.password = profileData.password;
+      }
+      
+      const success = await userStore.updateProfile(userData);
+      if (success) {
+        // 清空密碼欄位
         profileData.password = '';
         profileData.confirmPassword = '';
-      } catch (err) {
-        console.error('更新用戶資料錯誤:', err);
-        error.value = err.response?.data?.message || '更新資料失敗，請稍後再試';
-        toast.error(error.value);
-      } finally {
-        loading.value = false;
+        
+        alert('個人資料已更新');
       }
     };
     
@@ -465,11 +427,10 @@ export default {
       }
     };
     
-    // 組件掛載時獲取用戶資料
+    // 組件掛載時獲取訂單
     onMounted(() => {
       if (isAuthenticated.value) {
         fetchOrders();
-        fetchUserData();
       }
     });
     
@@ -480,36 +441,12 @@ export default {
       }
     });
     
-    // 獲取用戶資料
-    const fetchUserData = async () => {
-      loading.value = true;
-      try {
-        // 從後端獲取最新用戶資料
-        const response = await axios.get('/api/users/profile');
-        
-        // 將取得的資料填入表單
-        user.value.name = response.data.name;
-        user.value.email = response.data.email;
-        user.value.phone = response.data.phone || '';
-        user.value.company = response.data.company || '';
-        
-        // 同時更新store中的資料
-        userStore.updateUserProfile(response.data);
-      } catch (err) {
-        console.error('獲取用戶資料錯誤:', err);
-        error.value = '無法獲取用戶資料，請稍後再試';
-      } finally {
-        loading.value = false;
-      }
-    };
-    
     return {
       activeTab,
       user,
       isAuthenticated,
       loading,
       error,
-      success,
       profileData,
       passwordError,
       updateProfile,
