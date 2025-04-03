@@ -21,15 +21,31 @@
         <div class="favorites-grid">
           <div v-for="item in favorites" :key="item.productId" class="favorite-item">
             <div class="favorite-image">
-              <img v-if="item.image" :src="item.image" :alt="item.name">
-              <div v-else class="placeholder-image">無圖片</div>
+              <img 
+                v-if="item.image && !imageErrors[item.productId]" 
+                :src="getImageUrl(item.image)" 
+                :alt="item.name"
+                @error="handleImageError(item.productId)"
+              >
+              <div v-else class="image-placeholder">
+                <div class="placeholder-content">
+                  <div class="placeholder-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="3" y="3" width="18" height="18" rx="2" stroke="#CCCCCC" stroke-width="1.5"/>
+                      <circle cx="8.5" cy="8.5" r="1.5" stroke="#CCCCCC" stroke-width="1.5"/>
+                      <path d="M21 15L16 10L5 21" stroke="#CCCCCC" stroke-width="1.5"/>
+                    </svg>
+                  </div>
+                  <div class="placeholder-text">商品圖片準備中</div>
+                </div>
+              </div>
             </div>
             
             <div class="favorite-details">
               <h3 class="favorite-name">{{ item.name }}</h3>
               <div class="favorite-price">NT$ {{ item.price }}</div>
               <div class="favorite-actions">
-                <router-link :to="`/products/${item.productId}`" class="view-btn">
+                <router-link :to="`/product/${item.productId}`" class="view-btn">
                   查看詳情
                 </router-link>
                 <button @click="removeFavorite(item.productId)" class="remove-btn">
@@ -44,7 +60,7 @@
 </template>
 
 <script>
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useFavoriteStore } from '@/store/favoriteStore';
 import { useUserStore } from '@/store/userStore';
 
@@ -53,10 +69,23 @@ export default {
   setup() {
     const favoriteStore = useFavoriteStore();
     const userStore = useUserStore();
+    const imageErrors = ref({});
     
     const isAuthenticated = computed(() => userStore.isAuthenticated);
     const favorites = computed(() => favoriteStore.favorites);
     const loading = computed(() => favoriteStore.loading);
+    
+    // 取得圖片URL
+    const getImageUrl = (image) => {
+      if (!image) return '';
+      if (image.startsWith('http')) return image;
+      return `/uploads/images/${image}`;
+    };
+    
+    // 處理圖片載入錯誤
+    const handleImageError = (productId) => {
+      imageErrors.value[productId] = true;
+    };
     
     // 移除收藏
     const removeFavorite = (productId) => {
@@ -76,7 +105,10 @@ export default {
       isAuthenticated,
       favorites,
       loading,
-      removeFavorite
+      removeFavorite,
+      getImageUrl,
+      handleImageError,
+      imageErrors
     };
   }
 }
@@ -106,7 +138,7 @@ export default {
 
 .auth-button, .browse-btn {
   display: inline-block;
-  background-color: var(--primary-color);
+  background-color: #e74c3c;
   color: white;
   text-decoration: none;
   padding: 10px 20px;
@@ -115,14 +147,14 @@ export default {
 }
 
 .auth-button:hover, .browse-btn:hover {
-  background-color: #3d8b40;
+  background-color: #c0392b;
 }
 
 .spinner {
   width: 40px;
   height: 40px;
   border: 4px solid rgba(0, 0, 0, 0.1);
-  border-left-color: var(--primary-color);
+  border-left-color: #e74c3c;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 20px;
@@ -134,47 +166,69 @@ export default {
 
 .favorites-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 25px;
 }
 
 .favorite-item {
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .favorite-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .favorite-image {
-  height: 200px;
+  position: relative;
+  width: 100%;
+  height: 220px;
   overflow: hidden;
+  background-color: #f8f9fa;
 }
 
 .favorite-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s;
+  transition: transform 0.5s ease;
 }
 
 .favorite-item:hover .favorite-image img {
   transform: scale(1.05);
 }
 
-.placeholder-image {
+/* 圖片佔位符樣式 */
+.image-placeholder {
   width: 100%;
   height: 100%;
-  background-color: #f5f5f5;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #999;
+  background-color: #f8f9fa;
+}
+
+.placeholder-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.placeholder-icon {
+  margin-bottom: 12px;
+  opacity: 0.7;
+}
+
+.placeholder-text {
+  color: #adb5bd;
+  font-size: 14px;
 }
 
 .favorite-details {
@@ -182,19 +236,17 @@ export default {
 }
 
 .favorite-name {
-  font-size: 1.1rem;
-  margin-bottom: 10px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0 0 10px;
+  color: #333;
+  line-height: 1.4;
 }
 
 .favorite-price {
-  color: var(--primary-color);
-  font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 18px;
+  color: #e74c3c;
+  font-weight: 500;
   margin-bottom: 15px;
 }
 
@@ -206,40 +258,35 @@ export default {
 .view-btn, .remove-btn {
   flex: 1;
   padding: 8px 0;
-  text-align: center;
   border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+  cursor: pointer;
   transition: all 0.3s;
 }
 
 .view-btn {
-  background-color: var(--secondary-color);
+  background-color: #e74c3c;
   color: white;
   text-decoration: none;
 }
 
 .view-btn:hover {
-  background-color: #1976D2;
+  background-color: #c0392b;
 }
 
 .remove-btn {
-  background-color: #f5f5f5;
-  color: #666;
-  border: none;
-  cursor: pointer;
+  background-color: white;
+  color: #333;
+  border: 1px solid #ddd;
 }
 
 .remove-btn:hover {
-  background-color: #ffdddd;
-  color: #e74c3c;
+  background-color: #f8f9fa;
+  border-color: #ccc;
 }
 
 @media (max-width: 768px) {
-  .favorites-grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  }
-}
-
-@media (max-width: 576px) {
   .favorites-grid {
     grid-template-columns: 1fr;
   }
