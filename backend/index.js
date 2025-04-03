@@ -8,6 +8,7 @@ const authRoutes = require('./routes/authRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const favoriteRoutes = require('./routes/favoriteRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 
 
 // 加載環境變量
@@ -28,6 +29,7 @@ mongoose.connect(MONGODB_URI)
 // 中間件
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
 // 設置上傳圖片路徑
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -57,6 +59,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/contact', contactRoutes);
 
 // 初始化示例數據的路由
 app.post('/api/seed', async (req, res) => {
