@@ -1,5 +1,26 @@
 const Contact = require('../models/Contact');
 
+// 清理舊聯絡記錄
+const cleanupOldRecords = async () => {
+    try {
+      // 設定閾值，例如30天前的記錄被視為舊記錄
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      // 找到並刪除過期的未處理記錄
+      // 注意：您可以根據業務需求調整這個條件
+      const result = await Contact.deleteMany({
+        createdAt: { $lt: thirtyDaysAgo },
+        status: 'pending' // 只刪除未處理的記錄
+      });
+      
+      console.log(`已清理 ${result.deletedCount} 條舊聯絡記錄`);
+    } catch (error) {
+      console.error('清理舊記錄錯誤:', error);
+      // 即使清理失敗，我們不應該中斷表單提交流程
+    }
+  };
+
 // 提交聯絡表單
 exports.submitContactForm = async (req, res) => {
   try {
@@ -10,9 +31,6 @@ exports.submitContactForm = async (req, res) => {
       return res.status(400).json({ message: '姓名、電子郵件和訊息為必填欄位' });
     }
     
-    // 檢查並清理舊記錄以控制數據庫大小
-    await cleanupOldRecords();
-    
     // 創建新的聯絡訊息
     const contact = await Contact.create({
       name,
@@ -22,6 +40,8 @@ exports.submitContactForm = async (req, res) => {
       lineId: lineId || '',
       message
     });
+
+    cleanupOldRecords().catch(err => console.error('清理舊記錄時出錯:', err));
     
     // 返回成功訊息
     res.status(201).json({ 
