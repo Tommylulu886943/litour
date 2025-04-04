@@ -1,11 +1,29 @@
 <template>
   <div class="product-detail container">
-    <div v-if="loading" class="loading">載入中...</div>
+    <!-- 調試信息 -->
+    <div class="debug-info" v-if="showDebug">
+      <h3>調試信息</h3>
+      <p>產品ID: {{ $route.params.id }}</p>
+      <p>載入狀態: {{ loading ? '載入中' : '載入完成' }}</p>
+      <p>錯誤信息: {{ error || '無錯誤' }}</p>
+      <p>產品數據: {{ product ? '已獲取' : '未獲取' }}</p>
+      <pre v-if="product">{{ JSON.stringify(product, null, 2) }}</pre>
+      <button @click="refreshData" class="debug-btn">重新獲取數據</button>
+    </div>
+
+    <div v-if="loading" class="loading">
+      <div class="spinner"></div>
+      <span>載入中...</span>
+    </div>
     
-    <div v-else-if="error" class="error">{{ error }}</div>
+    <div v-else-if="error" class="error">
+      <p>{{ error }}</p>
+      <router-link to="/products" class="back-link">返回商品列表</router-link>
+    </div>
     
     <div v-else-if="!product" class="empty">
-      找不到產品
+      <p>找不到此產品</p>
+      <router-link to="/products" class="back-link">返回商品列表</router-link>
     </div>
     
     <div v-else class="product-detail-content">
@@ -29,55 +47,38 @@
             <span class="original-price">NT$ {{ product.price }}</span>
             <span class="price">NT$ {{ product.discountPrice }}</span>
           </template>
-          <span v-else class="price">NT$ {{ product.price }}</span>
+          <template v-else>
+            <span class="price">NT$ {{ product.price }}</span>
+          </template>
         </div>
         
-        <p class="product-description">{{ product.description }}</p>
+        <div class="product-stock">
+          <span v-if="product.stock > 0" class="in-stock">現貨: {{ product.stock }} 件</span>
+          <span v-else class="out-of-stock">缺貨中</span>
+        </div>
         
-        <div class="product-meta">
-          <div class="product-stock">
-            <span class="meta-label">庫存:</span>
-            <span class="stock-status" :class="{ 'in-stock': product.stock > 0 }">
-              {{ product.stock > 0 ? '有庫存' : '缺貨中' }}
-            </span>
+        <div class="product-description">
+          <h2>產品描述</h2>
+          <p>{{ product.description }}</p>
+        </div>
+        
+        <div class="quantity-selector">
+          <h2>數量</h2>
+          <div class="quantity-controls">
+            <button @click="decreaseQuantity" :disabled="quantity <= 1 || product.stock <= 0" class="quantity-btn">-</button>
+            <input type="number" v-model.number="quantity" min="1" :max="product.stock" class="quantity-input" />
+            <button @click="increaseQuantity" :disabled="quantity >= product.stock || product.stock <= 0" class="quantity-btn">+</button>
           </div>
-          
-          <div v-if="product.categories && product.categories.length" class="product-categories">
-            <span class="meta-label">類別:</span>
-            <span v-for="(category, index) in product.categories" :key="index" class="category-tag">
-              {{ category }}
-            </span>
-          </div>
         </div>
         
-        <div class="product-actions">
-          <div class="quantity-selector">
-            <button @click="decreaseQuantity" :disabled="quantity <= 1">-</button>
-            <input type="number" v-model.number="quantity" min="1" :max="product.stock">
-            <button @click="increaseQuantity" :disabled="quantity >= product.stock">+</button>
-          </div>
-          
-          <button 
-            @click="addToCart" 
-            class="add-to-cart-btn"
-            :disabled="product.stock <= 0"
-          >
-            加入購物車
-          </button>
-        </div>
-        
-        <div v-if="product.specifications" class="product-specifications">
-          <h3>產品規格</h3>
-          <ul>
-            <li v-for="(value, key) in product.specifications" :key="key">
-              <span class="spec-name">{{ key }}:</span> {{ value }}
-            </li>
-          </ul>
-        </div>
-        
-        <div v-if="product.tags && product.tags.length" class="product-tags">
-          <span v-for="tag in product.tags" :key="tag" class="tag">{{ tag }}</span>
-        </div>
+        <button 
+          @click="addToCart" 
+          class="add-to-cart-btn"
+          :disabled="product.stock <= 0"
+        >
+          <span v-if="product.stock > 0">加入購物車</span>
+          <span v-else>缺貨中</span>
+        </button>
       </div>
     </div>
   </div>
@@ -94,14 +95,28 @@ export default {
     const route = useRoute();
     const productStore = useProductStore();
     const quantity = ref(1);
+    const showDebug = ref(true); // 開啟調試模式
+    
+    const fetchProductData = () => {
+      const productId = route.params.id;
+      console.log('正在獲取產品ID:', productId);
+      productStore.fetchProductById(productId)
+        .then(() => console.log('獲取產品成功'))
+        .catch(err => console.error('獲取產品失敗:', err));
+    };
     
     onMounted(() => {
-      const productId = route.params.id;
-      productStore.fetchProductById(productId);
+      console.log('ProductDetailView mounted with ID:', route.params.id);
+      fetchProductData();
     });
     
+    const refreshData = () => {
+      console.log('手動刷新數據');
+      fetchProductData();
+    };
+    
     const increaseQuantity = () => {
-      if (quantity.value < productStore.product.stock) {
+      if (quantity.value < productStore.product?.stock) {
         quantity.value++;
       }
     };
@@ -114,7 +129,6 @@ export default {
     
     const addToCart = () => {
       alert(`已將 ${quantity.value} 個 "${productStore.product.name}" 加入購物車`);
-      // 稍後會實現真正的購物車功能
     };
     
     return {
@@ -124,7 +138,9 @@ export default {
       quantity,
       increaseQuantity,
       decreaseQuantity,
-      addToCart
+      addToCart,
+      showDebug,
+      refreshData
     };
   }
 }
@@ -140,10 +156,45 @@ export default {
   padding: 40px 0;
   font-size: 1.2rem;
   color: #666;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-left-color: var(--primary-color);
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .error {
   color: #e44d26;
+}
+
+.back-link {
+  margin-top: 15px;
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.back-link:hover {
+  background-color: var(--hover-color);
 }
 
 .product-detail-content {
@@ -155,115 +206,142 @@ export default {
 .product-gallery {
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .product-main-image {
   width: 100%;
-  height: 400px;
+  height: auto;
   object-fit: cover;
 }
 
 .placeholder-image {
+  width: 100%;
+  height: 500px;
+  background-color: #f2f2f2;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 400px;
-  background-color: #f0f0f0;
   color: #999;
+  font-size: 1.2rem;
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .product-title {
   font-size: 2rem;
-  margin-bottom: 15px;
+  margin: 0;
+  color: var(--text-color);
 }
 
 .product-price {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
-  font-size: 1.5rem;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
-.product-description {
-  color: #555;
-  line-height: 1.7;
-  margin-bottom: 25px;
-}
-
-.product-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-bottom: 25px;
-  padding-bottom: 25px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.meta-label {
+.price {
+  font-size: 1.8rem;
   font-weight: bold;
-  margin-right: 5px;
-}
-
-.stock-status {
-  color: #e44d26;
-}
-
-.stock-status.in-stock {
   color: var(--primary-color);
 }
 
-.category-tag {
-  background-color: #f0f0f0;
-  padding: 4px 8px;
-  border-radius: 4px;
-  margin-right: 5px;
-  font-size: 0.9rem;
+.original-price {
+  font-size: 1.2rem;
+  color: #999;
+  text-decoration: line-through;
 }
 
-.product-actions {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 30px;
+.product-stock {
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.in-stock {
+  color: #2ecc71;
+}
+
+.out-of-stock {
+  color: #e74c3c;
+}
+
+.product-description {
+  margin: 20px 0;
+}
+
+.product-description h2 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: var(--text-color);
+}
+
+.product-description p {
+  line-height: 1.6;
+  color: #555;
+  text-align: justify;
 }
 
 .quantity-selector {
+  margin: 20px 0;
+}
+
+.quantity-selector h2 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: var(--text-color);
+}
+
+.quantity-controls {
   display: flex;
   align-items: center;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  overflow: hidden;
+  width: 150px;
 }
 
-.quantity-selector button {
-  background-color: #f0f0f0;
-  color: var(--text-color);
-  border: none;
-  padding: 10px 15px;
+.quantity-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ddd;
+  background-color: #f5f5f5;
   cursor: pointer;
-  transition: background-color 0.3s;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.quantity-selector button:hover:not(:disabled) {
-  background-color: #e0e0e0;
-}
-
-.quantity-selector button:disabled {
-  color: #999;
+.quantity-btn:disabled {
   cursor: not-allowed;
+  opacity: 0.5;
 }
 
-.quantity-selector input {
-  width: 60px;
+.quantity-input {
+  width: 70px;
+  height: 40px;
+  border: 1px solid #ddd;
   text-align: center;
-  border: none;
-  border-left: 1px solid var(--border-color);
-  border-right: 1px solid var(--border-color);
-  padding: 10px 0;
+  font-size: 1rem;
+  margin: 0 5px;
 }
 
 .add-to-cart-btn {
-  flex-grow: 1;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 15px 0;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 20px;
+}
+
+.add-to-cart-btn:hover:not(:disabled) {
+  background-color: var(--hover-color);
 }
 
 .add-to-cart-btn:disabled {
@@ -271,49 +349,48 @@ export default {
   cursor: not-allowed;
 }
 
-.product-specifications {
-  margin-bottom: 25px;
-}
-
-.product-specifications h3 {
-  margin-bottom: 10px;
-  font-size: 1.2rem;
-}
-
-.product-specifications ul {
-  list-style: none;
-  padding: 0;
-}
-
-.product-specifications li {
-  padding: 8px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.spec-name {
-  font-weight: bold;
-  margin-right: 5px;
-  text-transform: capitalize;
-}
-
-.product-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 25px;
-}
-
-.tag {
-  background-color: #f0f0f0;
-  color: #555;
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 0.9rem;
-}
-
 @media (max-width: 768px) {
   .product-detail-content {
     grid-template-columns: 1fr;
   }
+  
+  .product-title {
+    font-size: 1.8rem;
+  }
+  
+  .price {
+    font-size: 1.5rem;
+  }
+}
+
+/* 調試區域樣式 */
+.debug-info {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 20px;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.debug-info pre {
+  white-space: pre-wrap;
+  margin-top: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: #eee;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.debug-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
 }
 </style>

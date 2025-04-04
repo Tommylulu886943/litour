@@ -1,6 +1,6 @@
 <template>
-  <div class="product-card">
-    <div class="product-image-container" @click="navigateToProduct">
+  <div class="product-card" @click="navigateToProduct">
+    <div class="product-image-container">
       <img 
         v-if="product.images && product.images.length > 0 && !showImageError" 
         :src="getImageUrl(product.images[0])" 
@@ -48,7 +48,7 @@
       </svg>
     </button>
     
-    <div class="product-content" @click="navigateToProduct">
+    <div class="product-content">
       <h3 class="product-title">{{ product.name }}</h3>
       
       <div class="product-rating">
@@ -67,14 +67,14 @@
         </template>
         <span v-else class="price">NT$ {{ product.price }}</span>
       </div>
-    </div>
       
-    <button @click="addToCart" class="add-to-cart-btn">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 6px">
-        <path d="M3 3H5L5.4 5M5.4 5H21L17 13H7M5.4 5L7 13M7 13L4.707 15.293C4.077 15.923 4.523 17 5.414 17H17M17 17C16.4696 17 15.9609 17.2107 15.5858 17.5858C15.2107 17.9609 15 18.4696 15 19C15 19.5304 15.2107 20.0391 15.5858 20.4142C15.9609 20.7893 16.4696 21 17 21C17.5304 21 18.0391 20.7893 18.4142 20.4142C18.7893 20.0391 19 19.5304 19 19C19 18.4696 18.7893 17.9609 18.4142 17.5858C18.0391 17.2107 17.5304 17 17 17ZM9 19C9 19.5304 8.78929 20.0391 8.41421 20.4142C8.03914 20.7893 7.53043 21 7 21C6.46957 21 5.96086 20.7893 5.58579 20.4142C5.21071 20.0391 5 19.5304 5 19C5 18.4696 5.21071 17.9609 5.58579 17.5858C5.96086 17.2107 6.46957 17 7 17C7.53043 17 8.03914 17.2107 8.41421 17.5858C8.78929 17.9609 9 18.4696 9 19Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      加入購物車
-    </button>
+      <button @click.stop="addToCart" class="add-to-cart-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 6px">
+          <path d="M3 3H5L5.4 5M5.4 5H21L17 13H7M5.4 5L7 13M7 13L4.707 15.293C4.077 15.923 4.523 17 5.414 17H17M17 17C16.4696 17 15.9609 17.2107 15.5858 17.5858C15.2107 17.9609 15 18.4696 15 19C15 19.5304 15.2107 20.0391 15.5858 20.4142C15.9609 20.7893 16.4696 21 17 21C17.5304 21 18.0391 20.7893 18.4142 20.4142C18.7893 20.0391 19 19.5304 19 19C19 18.4696 18.7893 17.9609 18.4142 17.5858C18.0391 17.2107 17.5304 17 17 17ZM9 19C9 19.5304 8.78929 20.0391 8.41421 20.4142C8.03914 20.7893 7.53043 21 7 21C6.46957 21 5.96086 20.7893 5.58579 20.4142C5.21071 20.0391 5 19.5304 5 19C5 18.4696 5.21071 17.9609 5.58579 17.5858C5.96086 17.2107 6.46957 17 7 17C7.53043 17 8.03914 17.2107 8.41421 17.5858C8.78929 17.9609 9 18.4696 9 19Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        加入購物車
+      </button>
+    </div>
   </div>
 </template>
 
@@ -103,27 +103,41 @@ export default {
     // 取得圖片URL
     const getImageUrl = (image) => {
       if (!image) return '';
-      if (image.startsWith('http')) return image;
+      // 如果圖片路徑已經包含完整URL或/uploads前綴，直接返回
+      if (image.startsWith('http') || image.startsWith('/uploads')) {
+        return image;
+      }
+      // 否則添加/uploads/images/前綴
       return `/uploads/images/${image}`;
     };
+    
+    // 是否有折扣
+    const hasDiscount = computed(() => {
+      return props.product.discountPrice && props.product.discountPrice < props.product.price;
+    });
     
     // 處理圖片載入錯誤
     const handleImageError = () => {
       showImageError.value = true;
     };
     
-    // 收藏功能
+    // 折扣百分比
+    const discountPercentage = computed(() => {
+      if (!hasDiscount.value) return 0;
+      const discount = Math.round(((props.product.price - props.product.discountPrice) / props.product.price) * 100);
+      return discount;
+    });
+    
+    // 是否已收藏
     const isFavorite = computed(() => {
       return favoriteStore.isFavorite(props.product._id);
     });
     
+    // 切換收藏狀態
     const toggleFavorite = (event) => {
-      // 防止事件傳播和默認行為
-      event.preventDefault();
       event.stopPropagation();
-      
       if (!userStore.isAuthenticated) {
-        // 未登入時跳轉到登入頁面
+        // 如果用戶未登入，跳轉到登入頁面
         router.push('/login');
         return;
       }
@@ -135,46 +149,27 @@ export default {
       }
     };
     
-    // 加入購物車
-    const addToCart = (event) => {
-      // 防止事件傳播
-      event.preventDefault();
-      event.stopPropagation();
-      
-      cartStore.addToCart({
-        productId: props.product._id,
-        name: props.product.name,
-        price: props.product.discountPrice || props.product.price,
-        image: props.product.images && props.product.images.length > 0 ? props.product.images[0] : null,
-        quantity: 1
-      });
-    };
-    
-    // 跳轉到商品詳情頁
+    // 導航到商品詳情頁
     const navigateToProduct = () => {
+      console.log('正在導航到產品詳情頁，產品ID:', props.product._id);
       router.push(`/product/${props.product._id}`);
     };
     
-    // 折扣計算
-    const hasDiscount = computed(() => {
-      return props.product.discountPrice && props.product.discountPrice < props.product.price;
-    });
-    
-    const discountPercentage = computed(() => {
-      if (!hasDiscount.value) return 0;
-      const discount = Math.round(((props.product.price - props.product.discountPrice) / props.product.price) * 100);
-      return discount;
-    });
+    // 添加到購物車
+    const addToCart = (event) => {
+      event.stopPropagation();
+      cartStore.addToCart(props.product);
+    };
     
     return {
-      navigateToProduct,
-      addToCart,
-      isFavorite,
-      toggleFavorite,
       hasDiscount,
       discountPercentage,
-      handleImageError,
+      isFavorite,
+      toggleFavorite,
+      navigateToProduct,
+      addToCart,
       showImageError,
+      handleImageError,
       getImageUrl
     };
   }
@@ -183,68 +178,66 @@ export default {
 
 <style scoped>
 .product-card {
-  position: relative;
-  background: #fff;
+  background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
   height: 100%;
-  cursor: pointer;
+  position: relative;
 }
 
 .product-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .product-image-container {
   position: relative;
   width: 100%;
-  height: 220px;
+  padding-bottom: 100%; /* 正方形容器 */
   overflow: hidden;
-  background-color: #f8f9fa;
 }
 
 .product-image {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: transform 0.3s;
 }
 
 .product-card:hover .product-image {
   transform: scale(1.05);
 }
 
-/* 佔位符樣式 */
+/* 無圖片佔位符樣式 */
 .image-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  background-color: #f8f8f8;
   display: flex;
-  align-items: center;
   justify-content: center;
-  background-color: #f8f9fa;
+  align-items: center;
 }
 
 .placeholder-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
   text-align: center;
 }
 
 .placeholder-icon {
-  margin-bottom: 12px;
-  opacity: 0.7;
+  margin-bottom: 10px;
 }
 
 .placeholder-text {
-  color: #adb5bd;
+  color: #999;
   font-size: 14px;
 }
 
@@ -273,11 +266,11 @@ export default {
 }
 
 .heart-icon {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
 }
 
-/* 標籤樣式 */
+/* 折扣和個人化標籤 */
 .discount-badge,
 .personalized-badge {
   position: absolute;
@@ -285,7 +278,7 @@ export default {
   border-radius: 4px;
   font-size: 12px;
   font-weight: 500;
-  z-index: 1;
+  z-index: 5;
 }
 
 .discount-badge {

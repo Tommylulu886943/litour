@@ -27,29 +27,19 @@ export const useProductStore = defineStore('products', {
     
     async fetchFeaturedProducts() {
       this.loading = true;
-      this.error = null;
-      
       try {
-        // 嘗試正常 API 呼叫
+        // 注意這裡使用的是 /api/products/featured，而不是 /api/products/id
         const response = await axios.get('/api/products/featured');
         this.featuredProducts = response.data;
-        
-        // 確保即使返回空數組也不顯示錯誤
-        if (!this.featuredProducts || this.featuredProducts.length === 0) {
-          // 如果後端返回了空數組，可以使用預設的推薦商品
-          this.featuredProducts = await this.getFallbackProducts();
-        }
+        this.error = null;
       } catch (error) {
         console.error('獲取精選產品錯誤:', error);
         this.error = '無法獲取精選產品';
-        
-        // 發生錯誤時嘗試使用後備方案
+        // 嘗試使用備用方法
         try {
           this.featuredProducts = await this.getFallbackProducts();
-          this.error = null; // 如果後備方案成功，清除錯誤
         } catch (fallbackError) {
-          console.error('後備方案也失敗:', fallbackError);
-          this.error = '無法獲取精選產品，請稍後再試';
+          console.error('備用方法也失敗:', fallbackError);
         }
       } finally {
         this.loading = false;
@@ -71,13 +61,20 @@ export const useProductStore = defineStore('products', {
     
     async fetchProductById(id) {
       this.loading = true;
+      this.product = null; // 先清空現有產品數據
+      console.log(`準備獲取產品詳情，ID: ${id}`);
+      
       try {
+        console.log(`發送請求到: /api/products/${id}`);
         const response = await axios.get(`/api/products/${id}`);
+        console.log('獲取產品詳情成功:', response.data);
         this.product = response.data;
         this.error = null;
       } catch (error) {
         console.error('獲取產品詳情錯誤:', error);
+        console.error('詳細錯誤信息:', error.response ? error.response.data : error.message);
         this.error = '無法獲取產品詳情。請稍後再試。';
+        this.product = null;
       } finally {
         this.loading = false;
       }

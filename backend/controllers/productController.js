@@ -169,3 +169,36 @@ exports.getCategories = async (req, res) => {
     res.status(500).json({ message: '獲取分類失敗', error: error.message });
   }
 };
+
+// 獲取單個產品
+exports.getProductById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    
+    if (!product) {
+      return res.status(404).json({ message: '找不到產品' });
+    }
+    
+    res.json(product);
+  } catch (error) {
+    console.error('獲取產品詳情錯誤:', error);
+    res.status(500).json({ message: '獲取產品詳情失敗', error: error.message });
+  }
+};
+
+// 獲取精選產品
+exports.getFeaturedProducts = async (req, res) => {
+  try {
+    const featuredProducts = await Product.find({ 
+      isActive: true,
+      isFeatured: true 
+    })
+    .sort({ createdAt: -1 })
+    .limit(6);
+    
+    res.json(featuredProducts);
+  } catch (error) {
+    console.error('獲取精選產品錯誤:', error);
+    res.status(500).json({ message: '獲取精選產品失敗', error: error.message });
+  }
+};
