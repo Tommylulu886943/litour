@@ -10,28 +10,31 @@
     <div v-else class="profile-content">
       <div class="tabs">
         <button 
-          :class="['tab-button', { active: activeTab === 'profile' }]"
-          @click="activeTab = 'profile'"
+          class="tab-btn" 
+          :class="{ active: activeTab === '個人資料' }" 
+          @click="activeTab = '個人資料'"
         >
           個人資料
         </button>
         <button 
-          :class="['tab-button', { active: activeTab === 'orders' }]"
-          @click="activeTab = 'orders'"
-        >
-          我的訂單
-        </button>
-        <button 
-          :class="['tab-button', { active: activeTab === 'addresses' }]"
-          @click="activeTab = 'addresses'"
+          class="tab-btn" 
+          :class="{ active: activeTab === '收貨地址' }" 
+          @click="activeTab = '收貨地址'"
         >
           收貨地址
+        </button>
+        <button 
+          class="tab-btn" 
+          :class="{ active: activeTab === '我的訂單' }" 
+          @click="activeTab = '我的訂單'"
+        >
+          我的訂單
         </button>
       </div>
       
       <div class="tab-content">
         <!-- 個人資料 -->
-        <div v-if="activeTab === 'profile'" class="profile-tab">
+        <div v-if="activeTab === '個人資料'" class="profile-tab">
           <h2 class="tab-title">個人資料</h2>
           
           <div v-if="error" class="error-message">
@@ -82,7 +85,7 @@
         </div>
         
         <!-- 我的訂單 -->
-        <div v-if="activeTab === 'orders'" class="orders-tab">
+        <div v-if="activeTab === '我的訂單'" class="orders-tab">
           <h2 class="tab-title">我的訂單</h2>
           
           <div v-if="ordersLoading" class="loading">載入中...</div>
@@ -134,7 +137,7 @@
         </div>
         
         <!-- 收貨地址 -->
-        <div v-if="activeTab === 'addresses'" class="addresses-tab">
+        <div v-if="activeTab === '收貨地址'" class="addresses-tab">
           <h2 class="tab-title">收貨地址</h2>
           
           <div v-if="!user.addresses || !user.addresses.length" class="no-addresses">
@@ -244,7 +247,7 @@ export default {
   name: 'ProfileView',
   setup() {
     const userStore = useUserStore();
-    const activeTab = ref('profile');
+    const activeTab = ref('個人資料');
     const user = computed(() => userStore.user || {});
     const isAuthenticated = computed(() => userStore.isAuthenticated);
     const loading = computed(() => userStore.loading);
@@ -436,7 +439,7 @@ export default {
     
     // 監聽標籤變化，當切換到訂單標籤時獲取訂單數據
     watch(activeTab, (newTab) => {
-      if (newTab === 'orders' && isAuthenticated.value) {
+      if (newTab === '我的訂單' && isAuthenticated.value) {
         fetchOrders();
       }
     });
@@ -513,26 +516,42 @@ export default {
 
 .tabs {
   display: flex;
-  border-bottom: 1px solid var(--border-color);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-.tab-button {
+.tab-btn {
   flex: 1;
-  padding: 15px;
+  padding: 15px 20px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333333;
   background-color: #f5f5f5;
   border: none;
+  position: relative;
   cursor: pointer;
+  transition: all 0.3s ease;
+  border-right: 1px solid #ddd;
+}
+
+.tab-btn:last-child {
+  border-right: none;
+}
+
+.tab-btn:hover {
+  color: #e74c3c;
+  background-color: #f9f9f9;
+}
+
+.tab-btn.active {
+  color: #e74c3c;
   font-weight: 600;
-  transition: background-color 0.3s;
-}
-
-.tab-button:hover {
-  background-color: #e0e0e0;
-}
-
-.tab-button.active {
   background-color: white;
-  border-bottom: 3px solid var(--primary-color);
+  box-shadow: 0 -3px 0 #e74c3c inset, 0 1px 5px rgba(0, 0, 0, 0.1);
 }
 
 .tab-content {
@@ -910,11 +929,11 @@ export default {
     flex-direction: column;
   }
   
-  .tab-button {
+  .tab-btn {
     border-bottom: 1px solid var(--border-color);
   }
   
-  .tab-button.active {
+  .tab-btn.active {
     border-bottom: 1px solid var(--border-color);
     border-left: 3px solid var(--primary-color);
   }
@@ -931,5 +950,53 @@ export default {
   .address-actions {
     flex-direction: column;
   }
+}
+
+/* 個人中心標籤樣式優化 */
+.個人中心 {
+  padding: 30px 0;
+}
+
+/* 標籤容器樣式 */
+.個人中心 .tabs {
+  display: flex;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 30px;
+  background: #f9f9f9;
+}
+
+/* 標籤按鈕基礎樣式 */
+.個人中心 .tab-btn {
+  flex: 1;
+  padding: 15px 20px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333333; /* 未選中標籤改為深灰色，提高可讀性 */
+  background: transparent;
+  cursor: pointer;
+  border: none;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+/* 標籤按鈕懸停效果 */
+.個人中心 .tab-btn:hover {
+  color: #e74c3c; /* 紅色主題色 */
+  background-color: rgba(231, 76, 60, 0.05);
+}
+
+/* 選中標籤樣式 */
+.個人中心 .tab-btn.active {
+  color: #e74c3c; /* 選中使用紅色 */
+  font-weight: 600;
+  background-color: white;
+  box-shadow: 0 -3px 0 #e74c3c inset; /* 上邊緣紅色標記 */
+}
+
+/* 標籤分隔線 */
+.個人中心 .tab-btn:not(:last-child) {
+  border-right: 1px solid #ddd;
 }
 </style>
