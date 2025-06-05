@@ -76,17 +76,6 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path: '/search',
-      name: 'search',
-      component: () => import('../views/ProductsView.vue')
-    },
-    {
-      path: '/favorites',
-      name: 'favorites',
-      component: () => import('../views/FavoritesView.vue'),
-      meta: { requiresAuth: true }
-    },
-    {
       path: '/admin/batch-upload',
       name: 'admin-batch-upload',
       component: () => import('../views/admin/BatchUploadView.vue'),
