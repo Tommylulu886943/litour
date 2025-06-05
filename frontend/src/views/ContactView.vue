@@ -42,7 +42,7 @@
             </div>
             <div class="info-content">
               <div class="info-label">電子郵件</div>
-              <div class="info-text">littoutcndy@gmail.com</div>
+              <div class="info-text">litourcandy@gmail.com</div>
             </div>
           </div>
           
