@@ -114,15 +114,23 @@ exports.updateUserProfile = async (req, res) => {
       user.password = req.body.password;
     }
     
+    // 更新地址
+    if (req.body.addresses) {
+      user.addresses = req.body.addresses;
+    }
+
     const updatedUser = await user.save();
-    
+
     // 生成新令牌
     const token = generateToken(updatedUser._id);
-    
+
     res.json({
       _id: updatedUser._id,
       name: updatedUser.name,
       email: updatedUser.email,
+      phone: updatedUser.phone,
+      company: updatedUser.company,
+      addresses: updatedUser.addresses,
       role: updatedUser.role,
       token
     });
