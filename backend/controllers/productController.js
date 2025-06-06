@@ -2,17 +2,22 @@ const Product = require('../models/Product');
 const synonyms = require('../utils/synonyms');
 
 const buildSearchTerms = (keyword) => {
-  const terms = new Set([keyword]);
+  const lowerKeyword = keyword.toLowerCase();
+  const terms = new Set([lowerKeyword]);
+
   for (const [key, list] of Object.entries(synonyms)) {
-    if (keyword.includes(key)) {
-      terms.add(key);
-      list.forEach(t => terms.add(t));
-    }
-    if (list.some(s => keyword.includes(s))) {
-      terms.add(key);
-      list.forEach(t => terms.add(t));
+    const keyLower = key.toLowerCase();
+    const listLower = list.map((s) => s.toLowerCase());
+
+    if (
+      lowerKeyword.includes(keyLower) ||
+      listLower.some((s) => lowerKeyword.includes(s))
+    ) {
+      terms.add(keyLower);
+      listLower.forEach((t) => terms.add(t));
     }
   }
+
   return Array.from(terms);
 };
 
@@ -119,8 +124,10 @@ exports.getProducts = async (req, res) => {
 
     // 若使用文本搜尋卻沒有結果，改用模糊搜尋
     if (search && products.length === 0) {
-      const terms = buildSearchTerms(search).map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-      const regex = new RegExp(terms.join('|'), 'i');
+      const regexTerms = buildSearchTerms(search)
+        .map((t) => t.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&'))
+        .join('|');
+      const regex = new RegExp(regexTerms, 'i');
       const fuzzyQuery = { ...query };
       delete fuzzyQuery.$text;
       fuzzyQuery.$or = [
@@ -258,7 +265,9 @@ exports.getSearchPreview = async (req, res) => {
 
     // 若結果不足，使用模糊搜尋補齊
     if (products.length < 10) {
-      const regexTerms = terms.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+      const regexTerms = terms
+        .map((t) => t.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&'))
+        .join('|');
       const regex = new RegExp(regexTerms, 'i');
       const ids = products.map(p => p._id);
       const extra = await Product.find({
