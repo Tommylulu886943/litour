@@ -51,7 +51,9 @@ export const useUserStore = defineStore('user', {
         
         // 設置 axios 全局認證頭
         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-        
+
+        await this.fetchUserProfile();
+
         return true;
       } catch (error) {
         this.error = error.response?.data?.message || '登錄失敗';
@@ -90,7 +92,9 @@ export const useUserStore = defineStore('user', {
           localStorage.setItem('userToken', response.data.token);
           axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
         }
-        
+
+        await this.fetchUserProfile();
+
         return true;
       } catch (error) {
         this.error = error.response?.data?.message || '更新資料失敗';
