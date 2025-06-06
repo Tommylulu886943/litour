@@ -206,14 +206,18 @@ exports.getFeaturedProducts = async (req, res) => {
 // 搜尋預覽
 exports.getSearchPreview = async (req, res) => {
   try {
-    const search = req.query.search || '';
+  const search = req.query.search || '';
 
-    if (!search.trim()) {
-      return res.json([]);
-    }
+  if (!search.trim()) {
+    return res.json([]);
+  }
 
-  const regex = new RegExp(search, 'i');
+  const escapeRegExp = (string) => {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  };
 
+  const sanitizedSearch = escapeRegExp(search);
+  const regex = new RegExp(sanitizedSearch, 'i');
   const products = await Product.find({
     isActive: true,
     $or: [
