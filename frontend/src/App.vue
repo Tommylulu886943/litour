@@ -111,10 +111,11 @@
                 <div class="dropdown-column">
                   <h3>按興趣領域</h3>
                   <ul>
-                    <li><router-link :to="{ name: 'products', query: { category: 'Tech' } }">科技</router-link></li>
-                    <li><router-link :to="{ name: 'products', query: { category: 'Home' } }">生活用品</router-link></li>
-                    <li><router-link :to="{ name: 'products', query: { category: 'Sports' } }">運動用品</router-link></li>
-                    <li><router-link :to="{ name: 'products', query: { category: 'Stationery' } }">辦公用品</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { category: 'Stationery' } }">藝術與手作</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { category: 'Food & Drink' } }">烹飪與美食</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { category: 'Home' } }">園藝與生活</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { category: 'Tech' } }">科技與電子</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { category: 'Other' } }">運動與戶外</router-link></li>
                   </ul>
                 </div>
               </div>

@@ -120,7 +120,7 @@
                   @change="updateSubcategories"
                 >
                 <label :for="subcategory.name">
-                  {{ subcategory.name }}
+                  {{ translateSubcategory(subcategory.name) }}
                   <span class="count">({{ subcategory.count }})</span>
                 </label>
               </div>
@@ -299,7 +299,12 @@ import { ref, computed, watch, onMounted, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useFilterStore } from '@/store/filterStore';
 import ProductCard from '@/components/ProductCard.vue';
-import { translateCategory, categoryToEnglish } from '@/utils/categoryMap';
+import {
+  translateCategory,
+  categoryToEnglish,
+  translateSubcategory,
+  subcategoryToEnglish
+} from '@/utils/categoryMap';
 
 export default {
   name: 'ProductsView',
@@ -337,7 +342,9 @@ export default {
       
       // 子類別
       if (query.subcategory) {
-        const subcategories = query.subcategory.split(',');
+        const subcategories = query.subcategory
+          .split(',')
+          .map(sc => subcategoryToEnglish(sc));
         filterStore.setSearchParam('subcategory', subcategories);
         subcategorySelections.value = [...subcategories];
       }
@@ -596,7 +603,8 @@ export default {
       prevPage,
       nextPage,
       goToPage,
-      translateCategory
+      translateCategory,
+      translateSubcategory
     };
   }
 }
