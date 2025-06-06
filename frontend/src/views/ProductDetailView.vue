@@ -1,5 +1,8 @@
 <template>
   <div class="product-detail container">
+    <button class="toggle-debug-btn" @click="showDebug = !showDebug">
+      {{ showDebug ? '隱藏調試' : '顯示調試' }}
+    </button>
     <!-- 調試信息 -->
     <div class="debug-info" v-if="showDebug">
       <h3>調試信息</h3>
@@ -28,12 +31,11 @@
     
     <div v-else class="product-detail-content">
       <div class="product-gallery">
-        <img 
-          v-if="product.images && product.images.length > 0" 
-          :src="product.images[0]" 
-          :alt="product.name" 
-          class="product-main-image"
-        >
+        <ImageGallery
+          v-if="product.images && product.images.length > 0"
+          :images="product.images"
+          :alt="product.name"
+        />
         <div v-else class="placeholder-image">
           <span>無圖片</span>
         </div>
@@ -41,7 +43,12 @@
       
       <div class="product-info">
         <h1 class="product-title">{{ product.name }}</h1>
-        
+
+        <div class="product-rating" v-if="product.rating > 0">
+          <span v-for="i in 5" :key="i" class="star" :class="{ filled: i <= Math.round(product.rating) }">★</span>
+          <span class="rating-number">{{ product.rating.toFixed(1) }}</span>
+        </div>
+
         <div class="product-price">
           <template v-if="product.discountPrice">
             <span class="original-price">NT$ {{ product.price }}</span>
@@ -56,10 +63,38 @@
           <span v-if="product.stock > 0" class="in-stock">現貨: {{ product.stock }} 件</span>
           <span v-else class="out-of-stock">缺貨中</span>
         </div>
-        
+
+        <div class="order-info">
+          <span v-if="product.minimumOrderQuantity">最低訂購量: {{ product.minimumOrderQuantity }}</span>
+          <span v-if="product.deliveryTime">預計交貨 {{ product.deliveryTime }} 天</span>
+          <span v-if="product.isPersonalized" class="personalized-info">可客製化</span>
+        </div>
+
         <div class="product-description">
           <h2>產品描述</h2>
-          <p>{{ product.description }}</p>
+          <p>
+            {{ showFullDescription ? product.description : truncatedDescription }}
+            <button
+              v-if="product.description && product.description.length > 120"
+              @click="showFullDescription = !showFullDescription"
+              class="desc-toggle"
+            >
+              {{ showFullDescription ? '收起' : '更多' }}
+            </button>
+          </p>
+        </div>
+
+        <div v-if="product.specifications && Object.keys(product.specifications).length" class="product-specs">
+          <h2>商品規格</h2>
+          <ul>
+            <li v-for="(value, key) in product.specifications" :key="key">
+              <strong>{{ key }}:</strong> {{ value }}
+            </li>
+          </ul>
+        </div>
+
+        <div v-if="product.tags && product.tags.length" class="product-tags">
+          <span v-for="tag in product.tags" :key="tag" class="tag">{{ tag }}</span>
         </div>
         
         <div class="quantity-selector">
@@ -89,15 +124,24 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useProductStore } from '@/store/productStore';
 import { useCartStore } from '@/store/cartStore';
+import ImageGallery from '@/components/ImageGallery.vue';
 
 export default {
   name: 'ProductDetailView',
+  components: {
+    ImageGallery
+  },
   setup() {
     const route = useRoute();
     const productStore = useProductStore();
     const cartStore = useCartStore();
     const quantity = ref(1);
-    const showDebug = ref(true); // 開啟調試模式
+    const showDebug = ref(false); // 預設隱藏調試模式
+    const showFullDescription = ref(false);
+    const truncatedDescription = computed(() => {
+      const desc = productStore.product?.description || '';
+      return desc.length > 120 ? desc.slice(0, 120) + '...' : desc;
+    });
     
     const fetchProductData = () => {
       const productId = route.params.id;
@@ -143,7 +187,9 @@ export default {
       decreaseQuantity,
       addToCart,
       showDebug,
-      refreshData
+      refreshData,
+      showFullDescription,
+      truncatedDescription
     };
   }
 }
@@ -211,11 +257,6 @@ export default {
   overflow: hidden;
 }
 
-.product-main-image {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-}
 
 .placeholder-image {
   width: 100%;
@@ -286,6 +327,85 @@ export default {
   line-height: 1.6;
   color: #555;
   text-align: justify;
+}
+
+.desc-toggle {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  margin-left: 5px;
+  font-size: 0.9rem;
+}
+
+.order-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.personalized-info {
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.product-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.star {
+  color: #ddd;
+  font-size: 1.2rem;
+}
+
+.star.filled {
+  color: #ffc107;
+}
+
+.rating-number {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.product-specs {
+  margin: 20px 0;
+}
+
+.product-specs h2 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+}
+
+.product-specs ul {
+  padding-left: 20px;
+  color: #555;
+}
+
+.product-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.tag {
+  background-color: #f1f1f1;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.toggle-debug-btn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  margin-bottom: 10px;
 }
 
 .quantity-selector {
