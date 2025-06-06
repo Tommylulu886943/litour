@@ -536,8 +536,20 @@ export default {
     watch(
       () => filterStore.filterOptions.priceRange,
       (range) => {
-        sliderMinPrice.value = range.min;
-        sliderMaxPrice.value = range.max;
+        // 若使用者尚未自訂價格區間，套用後端提供的範圍
+        if (localMinPrice.value === '') {
+          sliderMinPrice.value = range.min;
+        } else {
+          // 確保滑塊不小於後端返回的最小值
+          sliderMinPrice.value = Math.max(range.min, sliderMinPrice.value);
+        }
+
+        if (localMaxPrice.value === '') {
+          sliderMaxPrice.value = range.max;
+        } else {
+          // 確保滑塊不大於後端返回的最大值
+          sliderMaxPrice.value = Math.min(range.max, sliderMaxPrice.value);
+        }
       },
       { immediate: true }
     );
