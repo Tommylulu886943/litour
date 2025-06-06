@@ -202,3 +202,26 @@ exports.getFeaturedProducts = async (req, res) => {
     res.status(500).json({ message: '獲取精選產品失敗', error: error.message });
   }
 };
+
+// 搜尋預覽
+exports.getSearchPreview = async (req, res) => {
+  try {
+    const search = req.query.search || '';
+
+    if (!search.trim()) {
+      return res.json([]);
+    }
+
+    const products = await Product.find({
+      isActive: true,
+      name: { $regex: search, $options: 'i' }
+    })
+      .select('name images')
+      .limit(5);
+
+    res.json(products);
+  } catch (error) {
+    console.error('獲取搜尋預覽錯誤:', error);
+    res.status(500).json({ message: '獲取搜尋預覽失敗', error: error.message });
+  }
+};
