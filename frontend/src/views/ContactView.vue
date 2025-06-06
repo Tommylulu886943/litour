@@ -58,6 +58,18 @@
               <div class="info-text">週一至週五：9:00 - 18:00</div>
             </div>
           </div>
+
+          <div class="info-item">
+            <div class="info-icon">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" alt="LINE">
+            </div>
+            <div class="info-content">
+              <div class="info-label">LINE 官方帳號</div>
+              <div class="info-text line-qr">
+                <img src="https://via.placeholder.com/200x200?text=LINE+QR" alt="LINE QR Code">
+              </div>
+            </div>
+          </div>
         </div>
         
         <!-- 右側聯絡表單 -->
@@ -306,6 +318,10 @@ export default {
   align-items: center;
   justify-content: center;
 }
+.info-icon img {
+  width: 24px;
+  height: 24px;
+}
 
 .info-content {
   flex-grow: 1;
@@ -322,6 +338,11 @@ export default {
   color: #666;
   font-size: 15px;
   line-height: 1.5;
+}
+.line-qr img {
+  width: 150px;
+  height: auto;
+  margin-top: 8px;
 }
 
 /* 右側表單 */
