@@ -51,7 +51,7 @@ export const useUserStore = defineStore('user', {
         
         // 設置 axios 全局認證頭
         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-        
+
         return true;
       } catch (error) {
         this.error = error.response?.data?.message || '登錄失敗';
@@ -67,7 +67,7 @@ export const useUserStore = defineStore('user', {
       
       try {
         const response = await axios.get('/api/auth/profile');
-        this.user = { ...this.user, ...response.data };
+        this.user = { ...response.data };
         return true;
       } catch (error) {
         console.error('獲取用戶資料錯誤:', error);
@@ -83,14 +83,14 @@ export const useUserStore = defineStore('user', {
       
       try {
         const response = await axios.put('/api/auth/profile', userData);
-        this.user = { ...this.user, ...response.data };
+        this.user = { ...response.data };
         
         // 更新令牌
         if (response.data.token) {
           localStorage.setItem('userToken', response.data.token);
           axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
         }
-        
+
         return true;
       } catch (error) {
         this.error = error.response?.data?.message || '更新資料失敗';

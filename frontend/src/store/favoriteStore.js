@@ -35,45 +35,44 @@ export const useFavoriteStore = defineStore('favorite', {
     async addFavorite(product) {
       // 避免重複添加
       if (this.isFavorite(product._id)) return;
-      
-      this.loading = true;
-      
+
+      const fav = {
+        productId: product._id,
+        name: product.name,
+        price: product.discountPrice || product.price,
+        image: product.images && product.images.length > 0 ? product.images[0] : null,
+        addedAt: new Date().toISOString(),
+      };
+
+      // 先樂觀地更新本地狀態
+      this.favorites.push(fav);
+
       try {
         await axios.post('/api/favorites', { productId: product._id });
-        
-        // 添加到本地狀態
-        this.favorites.push({
-          productId: product._id,
-          name: product.name,
-          price: product.discountPrice || product.price,
-          image: product.images && product.images.length > 0 ? product.images[0] : null,
-          addedAt: new Date().toISOString()
-        });
-        
         this.error = null;
       } catch (error) {
         console.error('添加收藏失敗:', error);
         this.error = '無法添加到收藏夾';
-      } finally {
-        this.loading = false;
+        // 還原本地狀態
+        this.favorites.splice(addedIndex, 1);
       }
     },
     
     async removeFavorite(productId) {
-      this.loading = true;
-      
+      const index = this.favorites.findIndex(f => f.productId === productId);
+      if (index === -1) return;
+
+      // 樂觀移除
+      const [removed] = this.favorites.splice(index, 1);
+
       try {
         await axios.delete(`/api/favorites/${productId}`);
-        
-        // 從本地狀態移除
-        this.favorites = this.favorites.filter(fav => fav.productId !== productId);
-        
         this.error = null;
       } catch (error) {
         console.error('移除收藏失敗:', error);
         this.error = '無法從收藏夾移除';
-      } finally {
-        this.loading = false;
+        // 還原狀態
+        this.favorites.splice(index, 0, removed);
       }
     },
     
