@@ -20,8 +20,20 @@
         <div v-for="(item, index) in cartItems" :key="index" class="cart-item">
           <div class="item-product">
             <div class="item-image">
-              <img v-if="item.image" :src="item.image" :alt="item.name">
-              <div v-else class="placeholder-image"></div>
+              <img v-if="item.image" :src="item.image" :alt="item.name" />
+              <div v-else class="placeholder-image">
+                <svg
+                  class="placeholder-icon"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2ZM5 5h14v8l-3.5-3.5-4 4-2.5-2.5L5 15V5Z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <span>無圖片</span>
+              </div>
             </div>
             <div class="item-details">
               <h3 class="item-name">{{ item.name }}</h3>
@@ -223,6 +235,7 @@ export default {
   padding: 15px;
   border-bottom: 1px solid var(--border-color);
   align-items: center;
+  column-gap: 20px;
 }
 
 .cart-item:last-child {
@@ -252,6 +265,18 @@ export default {
   width: 100%;
   height: 100%;
   background-color: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 0.75rem;
+  gap: 4px;
+}
+
+.placeholder-icon {
+  width: 24px;
+  height: 24px;
 }
 
 .item-name {
@@ -269,25 +294,33 @@ export default {
   border: 1px solid var(--border-color);
   border-radius: 4px;
   overflow: hidden;
-  width: 120px;
+  width: 112px;
 }
 
 .quantity-btn {
-  width: 40px;
-  height: 40px;
-  background-color: #f5f5f5;
-  border: none;
-  font-size: 1.2rem;
+  width: 36px;
+  height: 36px;
+  background-color: #fff;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .quantity-btn:hover:not(:disabled) {
-  background-color: #e0e0e0;
+  background-color: var(--primary-color);
+  color: #fff;
 }
 
 .quantity-btn:disabled {
   color: #ccc;
+  border-color: #ccc;
+  background-color: #f5f5f5;
   cursor: not-allowed;
 }
 
