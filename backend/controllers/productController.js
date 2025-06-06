@@ -212,12 +212,18 @@ exports.getSearchPreview = async (req, res) => {
       return res.json([]);
     }
 
-    const products = await Product.find({
-      isActive: true,
-      name: { $regex: search, $options: 'i' }
-    })
-      .select('name images')
-      .limit(5);
+  const regex = new RegExp(search, 'i');
+
+  const products = await Product.find({
+    isActive: true,
+    $or: [
+      { name: { $regex: regex } },
+      { description: { $regex: regex } },
+      { tags: { $elemMatch: { $regex: regex } } }
+    ]
+  })
+    .select('name images')
+    .limit(5);
 
     res.json(products);
   } catch (error) {
