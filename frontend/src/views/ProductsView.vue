@@ -531,6 +531,16 @@ export default {
     const searchParams = computed(() => filterStore.searchParams);
     const filterOptions = computed(() => filterStore.filterOptions);
     const activeFiltersCount = computed(() => filterStore.activeFiltersCount);
+
+    // 當後端回傳的價格範圍更新時，同步調整滑塊位置
+    watch(
+      () => filterStore.filterOptions.priceRange,
+      (range) => {
+        sliderMinPrice.value = range.min;
+        sliderMaxPrice.value = range.max;
+      },
+      { immediate: true }
+    );
     
     // 監聽路由變化，更新過濾器
     watch(() => route.query, () => {
@@ -540,14 +550,14 @@ export default {
     
     // 組件掛載時
     onMounted(async () => {
-      // 初始化類別數據
-      await filterStore.fetchCategories();
-      
       // 從 URL 解析查詢參數
       parseQueryParams();
-      
-      // 獲取產品
-      await fetchProducts();
+
+      // 同時取得分類與產品資料以加快初始載入
+      await Promise.all([
+        filterStore.fetchCategories(),
+        fetchProducts()
+      ]);
       
       // 初始化價格滑塊
       if (filterStore.filterOptions.priceRange) {

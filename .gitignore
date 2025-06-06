@@ -42,3 +42,5 @@ frontend/node_modules/vue-router/dist/vue-router.node.mjs
 backend/node_modules/bcryptjs/README.md
 backend/node_modules/*
 backend/node_modules/.bin/mkdirp.cmd
+chromedriver-linux64/
+chromedriver-linux64.zip

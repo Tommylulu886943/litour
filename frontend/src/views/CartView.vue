@@ -21,7 +21,7 @@
           <div class="item-product">
             <div class="item-image">
               <img v-if="item.image" :src="item.image" :alt="item.name">
-              <div v-else class="placeholder-image"></div>
+              <div v-else class="placeholder-image">無圖片</div>
             </div>
             <div class="item-details">
               <h3 class="item-name">{{ item.name }}</h3>
@@ -223,6 +223,7 @@ export default {
   padding: 15px;
   border-bottom: 1px solid var(--border-color);
   align-items: center;
+  column-gap: 20px;
 }
 
 .cart-item:last-child {
@@ -252,6 +253,11 @@ export default {
   width: 100%;
   height: 100%;
   background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 0.8rem;
 }
 
 .item-name {
@@ -275,19 +281,22 @@ export default {
 .quantity-btn {
   width: 40px;
   height: 40px;
-  background-color: #f5f5f5;
-  border: none;
+  background-color: #fff;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
   font-size: 1.2rem;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .quantity-btn:hover:not(:disabled) {
-  background-color: #e0e0e0;
+  background-color: var(--primary-color);
+  color: #fff;
 }
 
 .quantity-btn:disabled {
   color: #ccc;
+  border-color: #ccc;
   cursor: not-allowed;
 }
 
