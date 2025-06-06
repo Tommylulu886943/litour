@@ -1,4 +1,25 @@
 const Product = require('../models/Product');
+const synonyms = require('../utils/synonyms');
+
+const buildSearchTerms = (keyword) => {
+  const lowerKeyword = keyword.toLowerCase();
+  const terms = new Set([lowerKeyword]);
+
+  for (const [key, list] of Object.entries(synonyms)) {
+    const keyLower = key.toLowerCase();
+    const listLower = list.map((s) => s.toLowerCase());
+
+    if (
+      lowerKeyword.includes(keyLower) ||
+      listLower.some((s) => lowerKeyword.includes(s))
+    ) {
+      terms.add(keyLower);
+      listLower.forEach((t) => terms.add(t));
+    }
+  }
+
+  return Array.from(terms);
+};
 
 // 獲取所有產品，支持過濾、排序和分頁
 exports.getProducts = async (req, res) => {
@@ -21,7 +42,8 @@ exports.getProducts = async (req, res) => {
 
     // 搜索關鍵詞
     if (search) {
-      query.$text = { $search: search };
+      const terms = buildSearchTerms(search);
+      query.$text = { $search: terms.join(' ') };
     }
 
     // 類別過濾
@@ -95,10 +117,30 @@ exports.getProducts = async (req, res) => {
     const total = await Product.countDocuments(query);
 
     // 獲取產品
-    const products = await Product.find(query)
+    let products = await Product.find(query)
       .sort(sortOption)
       .skip(skip)
       .limit(parseInt(limit));
+
+    // 若使用文本搜尋卻沒有結果，改用模糊搜尋
+    if (search && products.length === 0) {
+      const regexTerms = buildSearchTerms(search)
+        .map((t) => t.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&'))
+        .join('|');
+      const regex = new RegExp(regexTerms, 'i');
+      const fuzzyQuery = { ...query };
+      delete fuzzyQuery.$text;
+      fuzzyQuery.$or = [
+        { name: { $regex: regex } },
+        { description: { $regex: regex } },
+        { tags: { $elemMatch: { $regex: regex } } }
+      ];
+
+      products = await Product.find(fuzzyQuery)
+        .sort(sortOption)
+        .skip(skip)
+        .limit(parseInt(limit));
+    }
 
     // 獲取獨特的子類別和它們的數量（用於過濾器）
     const subcategories = await Product.aggregate([
@@ -200,5 +242,59 @@ exports.getFeaturedProducts = async (req, res) => {
   } catch (error) {
     console.error('獲取精選產品錯誤:', error);
     res.status(500).json({ message: '獲取精選產品失敗', error: error.message });
+  }
+};
+
+// 搜尋預覽
+exports.getSearchPreview = async (req, res) => {
+  try {
+    const search = (req.query.search || '').trim();
+
+    if (!search) {
+    const terms = buildSearchTerms(search);
+    const textSearch = terms.join(' ');
+
+    // 先使用文本搜尋獲取排名靠前的結果
+    let products = await Product.find(
+      { isActive: true, $text: { $search: textSearch } },
+      { score: { $meta: 'textScore' } }
+    )
+      .sort({ score: { $meta: 'textScore' } })
+      .select('name images')
+      .limit(10);
+
+    // 若結果不足，使用模糊搜尋補齊
+    if (products.length < 10) {
+      const regexTerms = terms
+        .map((t) => t.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&'))
+        .join('|');
+      const regex = new RegExp(regexTerms, 'i');
+      const ids = products.map(p => p._id);
+      const extra = await Product.find({
+        isActive: true,
+        _id: { $nin: ids },
+        $or: [
+          { name: { $regex: regex } },
+          { description: { $regex: regex } },
+          { tags: { $elemMatch: { $regex: regex } } }
+        ]
+      })
+        .select('name images')
+        .limit(10 - products.length);
+
+      products = products.concat(extra);
+    }
+      { name: { $regex: regex } },
+      { description: { $regex: regex } },
+      { tags: { $elemMatch: { $regex: regex } } }
+    ]
+  })
+    .select('name images')
+    .limit(5);
+
+    res.json(products);
+  } catch (error) {
+    console.error('獲取搜尋預覽錯誤:', error);
+    res.status(500).json({ message: '獲取搜尋預覽失敗', error: error.message });
   }
 };

@@ -9,15 +9,46 @@
           
           <!-- 搜索框 -->
           <div class="search-bar">
-            <input 
-              type="text" 
-              v-model="searchQuery" 
+            <input
+              type="text"
+              v-model="searchQuery"
               placeholder="搜索商品..."
               @keyup.enter="handleSearch"
+              @focus="showSuggestions = true"
+              @input="onSearchInput"
+              @blur="hideSuggestions"
             >
             <button @click="handleSearch" class="search-btn">
               <i class="search-icon">🔍</i>
             </button>
+
+            <!-- 搜尋建議 -->
+            <ul v-show="showSuggestions" class="search-suggestions">
+              <li
+                v-for="item in suggestions"
+                :key="item._id"
+                class="suggestion-item"
+                @mousedown.prevent="selectSuggestion(item)"
+              >
+                <img
+                  v-if="item.images && item.images.length"
+                  :src="item.images[0]"
+                  :alt="item.name"
+                  class="suggestion-image"
+                  @error="e => e.target.src = placeholderImage"
+                />
+                <img
+                  v-else
+                  :src="placeholderImage"
+                  class="suggestion-image"
+                  alt="no image"
+                />
+                <span class="suggestion-name">{{ item.name }}</span>
+              </li>
+              <li v-if="searchQuery && suggestions.length === 0" class="suggestion-item no-result">
+                沒有找到相關商品
+              </li>
+            </ul>
           </div>
 
           <nav class="nav">
@@ -197,6 +228,7 @@ import { useRouter } from 'vue-router';
 import { useUserStore } from './store/userStore';
 import { useCartStore } from './store/cartStore';
 import { useFavoriteStore } from './store/favoriteStore';
+import axios from 'axios';
 
 export default {
   name: 'App',
@@ -209,6 +241,9 @@ export default {
 
     const showUserMenu = ref(false);
     const searchQuery = ref('');
+    const suggestions = ref([]);
+    const showSuggestions = ref(false);
+    const placeholderImage = new URL('./assets/no-image.svg', import.meta.url).href;
     
     // 用戶資訊
     const isAuthenticated = computed(() => userStore.isAuthenticated);
@@ -223,7 +258,7 @@ export default {
       userStore.logout();
       showUserMenu.value = false;
     };
-    
+
     // 處理搜索
     const handleSearch = () => {
       if (searchQuery.value.trim()) {
@@ -231,7 +266,44 @@ export default {
           name: 'products',
           query: { search: searchQuery.value.trim() }
         });
+        showSuggestions.value = false;
       }
+    };
+
+    // 搜尋預覽
+    let suggestionTimer;
+    const fetchSuggestions = async () => {
+      if (!searchQuery.value.trim()) {
+        suggestions.value = [];
+        return;
+      }
+      try {
+        const { data } = await axios.get('/api/products/preview', {
+          params: { search: searchQuery.value.trim() }
+        });
+        suggestions.value = data;
+      } catch (err) {
+        console.error('取得搜尋預覽失敗:', err);
+      }
+    };
+
+    const onSearchInput = () => {
+      showSuggestions.value = true;
+      clearTimeout(suggestionTimer);
+      suggestionTimer = setTimeout(fetchSuggestions, 300);
+    };
+
+    const hideSuggestions = () => {
+      setTimeout(() => {
+        showSuggestions.value = false;
+      }, 200);
+    };
+
+    const selectSuggestion = (item) => {
+      searchQuery.value = '';
+      showSuggestions.value = false;
+      suggestions.value = [];
+      router.push({ name: 'product-detail', params: { id: item._id } });
     };
     
     // 點擊外部關閉用戶選單
@@ -278,8 +350,14 @@ export default {
       cartItemCount,
       showUserMenu,
       searchQuery,
+      suggestions,
+      showSuggestions,
+      placeholderImage,
       logout,
       handleSearch,
+      onSearchInput,
+      hideSuggestions,
+      selectSuggestion,
       toggleUserMenu,
       isAdmin,
       favoritesCount,
@@ -372,6 +450,47 @@ export default {
 .search-btn:hover {
   background: none;
   transform: translateY(-50%) scale(1.1);
+}
+
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-height: 250px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  z-index: 200;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.suggestion-item:hover {
+  background-color: #f5f5f5;
+}
+
+.suggestion-image {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.suggestion-item.no-result {
+  justify-content: center;
+  color: #999;
 }
 
 .search-icon {
