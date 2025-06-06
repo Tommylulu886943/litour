@@ -147,9 +147,9 @@
     </main>
 
     <!-- 全站可見的 LINE 聯絡圖示 -->
-    <div class="line-floating">
-      <img class="line-icon" src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" alt="LINE">
-      <img class="line-qr" src="https://via.placeholder.com/200x200?text=LINE+QR" alt="LINE QR Code">
+    <div class="line-floating" tabindex="0" role="button" aria-label="Contact us on LINE">
+      <img class="line-icon" src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" alt="LINE logo">
+      <img class="line-qr" src="https://via.placeholder.com/200x200?text=LINE+QR" alt="Scan this QR code to contact us on LINE">
     </div>
 
     <footer class="footer">
