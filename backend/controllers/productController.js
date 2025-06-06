@@ -1,4 +1,20 @@
 const Product = require('../models/Product');
+const synonyms = require('../utils/synonyms');
+
+const buildSearchTerms = (keyword) => {
+  const terms = new Set([keyword]);
+  for (const [key, list] of Object.entries(synonyms)) {
+    if (keyword.includes(key)) {
+      terms.add(key);
+      list.forEach(t => terms.add(t));
+    }
+    if (list.some(s => keyword.includes(s))) {
+      terms.add(key);
+      list.forEach(t => terms.add(t));
+    }
+  }
+  return Array.from(terms);
+};
 
 // 獲取所有產品，支持過濾、排序和分頁
 exports.getProducts = async (req, res) => {
@@ -21,7 +37,8 @@ exports.getProducts = async (req, res) => {
 
     // 搜索關鍵詞
     if (search) {
-      query.$text = { $search: search };
+      const terms = buildSearchTerms(search);
+      query.$text = { $search: terms.join(' ') };
     }
 
     // 類別過濾
@@ -95,10 +112,28 @@ exports.getProducts = async (req, res) => {
     const total = await Product.countDocuments(query);
 
     // 獲取產品
-    const products = await Product.find(query)
+    let products = await Product.find(query)
       .sort(sortOption)
       .skip(skip)
       .limit(parseInt(limit));
+
+    // 若使用文本搜尋卻沒有結果，改用模糊搜尋
+    if (search && products.length === 0) {
+      const terms = buildSearchTerms(search).map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+      const regex = new RegExp(terms.join('|'), 'i');
+      const fuzzyQuery = { ...query };
+      delete fuzzyQuery.$text;
+      fuzzyQuery.$or = [
+        { name: { $regex: regex } },
+        { description: { $regex: regex } },
+        { tags: { $elemMatch: { $regex: regex } } }
+      ];
+
+      products = await Product.find(fuzzyQuery)
+        .sort(sortOption)
+        .skip(skip)
+        .limit(parseInt(limit));
+    }
 
     // 獲取獨特的子類別和它們的數量（用於過濾器）
     const subcategories = await Product.aggregate([
@@ -209,9 +244,12 @@ exports.getSearchPreview = async (req, res) => {
     const search = (req.query.search || '').trim();
 
     if (!search) {
+    const terms = buildSearchTerms(search);
+    const textSearch = terms.join(' ');
+
     // 先使用文本搜尋獲取排名靠前的結果
     let products = await Product.find(
-      { isActive: true, $text: { $search: search } },
+      { isActive: true, $text: { $search: textSearch } },
       { score: { $meta: 'textScore' } }
     )
       .sort({ score: { $meta: 'textScore' } })
@@ -220,7 +258,8 @@ exports.getSearchPreview = async (req, res) => {
 
     // 若結果不足，使用模糊搜尋補齊
     if (products.length < 10) {
-      const regex = new RegExp(search, 'i');
+      const regexTerms = terms.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+      const regex = new RegExp(regexTerms, 'i');
       const ids = products.map(p => p._id);
       const extra = await Product.find({
         isActive: true,
