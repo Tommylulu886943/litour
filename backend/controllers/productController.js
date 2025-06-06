@@ -206,21 +206,36 @@ exports.getFeaturedProducts = async (req, res) => {
 // 搜尋預覽
 exports.getSearchPreview = async (req, res) => {
   try {
-  const search = req.query.search || '';
+    const search = (req.query.search || '').trim();
 
-  if (!search.trim()) {
-    return res.json([]);
-  }
+    if (!search) {
+    // 先使用文本搜尋獲取排名靠前的結果
+    let products = await Product.find(
+      { isActive: true, $text: { $search: search } },
+      { score: { $meta: 'textScore' } }
+    )
+      .sort({ score: { $meta: 'textScore' } })
+      .select('name images')
+      .limit(10);
 
-  const escapeRegExp = (string) => {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  };
+    // 若結果不足，使用模糊搜尋補齊
+    if (products.length < 10) {
+      const regex = new RegExp(search, 'i');
+      const ids = products.map(p => p._id);
+      const extra = await Product.find({
+        isActive: true,
+        _id: { $nin: ids },
+        $or: [
+          { name: { $regex: regex } },
+          { description: { $regex: regex } },
+          { tags: { $elemMatch: { $regex: regex } } }
+        ]
+      })
+        .select('name images')
+        .limit(10 - products.length);
 
-  const sanitizedSearch = escapeRegExp(search);
-  const regex = new RegExp(sanitizedSearch, 'i');
-  const products = await Product.find({
-    isActive: true,
-    $or: [
+      products = products.concat(extra);
+    }
       { name: { $regex: regex } },
       { description: { $regex: regex } },
       { tags: { $elemMatch: { $regex: regex } } }
