@@ -146,6 +146,12 @@
       <router-view />
     </main>
 
+    <!-- 全站可見的 LINE 聯絡圖示 -->
+    <div class="line-floating">
+      <img class="line-icon" src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" alt="LINE">
+      <img class="line-qr" src="https://via.placeholder.com/200x200?text=LINE+QR" alt="LINE QR Code">
+    </div>
+
     <footer class="footer">
       <div class="container">
         <div class="footer-content">
@@ -644,6 +650,35 @@ export default {
   padding-top: 20px;
   text-align: center;
   color: #999;
+}
+
+/* 浮動 LINE 圖標 */
+.line-floating {
+  position: fixed;
+  right: 20px;
+  bottom: 120px;
+  z-index: 500;
+  text-align: center;
+}
+
+.line-icon {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+}
+
+.line-qr {
+  display: none;
+  position: absolute;
+  right: 0;
+  bottom: 60px;
+  width: 150px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.line-floating:hover .line-qr {
+  display: block;
 }
 
 /* 響應式設計 */
