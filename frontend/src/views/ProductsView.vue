@@ -11,7 +11,7 @@
           <template v-if="searchParams.category">
             <router-link :to="{ name: 'products' }">所有商品</router-link>
             <span class="separator">/</span>
-            <span class="current">{{ searchParams.category }}</span>
+            <span class="current">{{ translateCategory(searchParams.category) }}</span>
           </template>
           <template v-else>
             <span class="current">所有商品</span>
@@ -105,7 +105,7 @@
           
           <!-- 分類 -->
           <div class="filter-section" v-for="category in filterOptions.categories" :key="category._id">
-            <h3 class="filter-title">{{ category._id }}</h3>
+            <h3 class="filter-title">{{ translateCategory(category._id) }}</h3>
             <div class="filter-options">
               <div 
                 v-for="subcategory in category.subcategories" 
@@ -120,7 +120,7 @@
                   @change="updateSubcategories"
                 >
                 <label :for="subcategory.name">
-                  {{ subcategory.name }}
+                  {{ translateSubcategory(subcategory.name) }}
                   <span class="count">({{ subcategory.count }})</span>
                 </label>
               </div>
@@ -299,6 +299,12 @@ import { ref, computed, watch, onMounted, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useFilterStore } from '@/store/filterStore';
 import ProductCard from '@/components/ProductCard.vue';
+import {
+  translateCategory,
+  categoryToEnglish,
+  translateSubcategory,
+  subcategoryToEnglish
+} from '@/utils/categoryMap';
 
 export default {
   name: 'ProductsView',
@@ -328,14 +334,17 @@ export default {
         filterStore.setSearchParam('search', query.search);
       }
       
-      // 類別
+      // 類別 (允許中文分類，轉換為後端使用的英文)
       if (query.category) {
-        filterStore.setSearchParam('category', query.category);
+        const eng = categoryToEnglish(query.category);
+        filterStore.setSearchParam('category', eng);
       }
       
       // 子類別
       if (query.subcategory) {
-        const subcategories = query.subcategory.split(',');
+        const subcategories = query.subcategory
+          .split(',')
+          .map(sc => subcategoryToEnglish(sc));
         filterStore.setSearchParam('subcategory', subcategories);
         subcategorySelections.value = [...subcategories];
       }
@@ -518,7 +527,7 @@ export default {
     // 計算頁面標題
     const pageTitle = computed(() => {
       if (filterStore.searchParams.category) {
-        return `${filterStore.searchParams.category} 禮品`;
+        return `${translateCategory(filterStore.searchParams.category)} 禮品`;
       }
       return '所有禮品';
     });
@@ -605,7 +614,9 @@ export default {
       clearAllFilters,
       prevPage,
       nextPage,
-      goToPage
+      goToPage,
+      translateCategory,
+      translateSubcategory
     };
   }
 }
