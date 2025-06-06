@@ -38,6 +38,9 @@ exports.register = async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      phone: user.phone,
+      company: user.company,
+      addresses: user.addresses,
       role: user.role,
       token
     });
@@ -71,6 +74,9 @@ exports.login = async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      phone: user.phone,
+      company: user.company,
+      addresses: user.addresses,
       role: user.role,
       token
     });
@@ -114,9 +120,10 @@ exports.updateUserProfile = async (req, res) => {
       user.password = req.body.password;
     }
     
-    // 更新地址
-    if (req.body.addresses) {
+    // 更新地址 (允許清空)
+    if (req.body.addresses !== undefined) {
       user.addresses = req.body.addresses;
+      user.markModified('addresses');
     }
 
     const updatedUser = await user.save();
