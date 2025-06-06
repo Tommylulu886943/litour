@@ -66,77 +66,79 @@
       <div class="container">
         <nav class="main-nav">
           <div class="nav-item">
-            <router-link to="/new-bestsellers" class="nav-link">NEW & BESTSELLERS</router-link>
+            <router-link :to="{ name: 'products' }" class="nav-link">新品與熱銷</router-link>
             <div class="dropdown-menu">
               <div class="dropdown-columns">
                 <div class="dropdown-column">
                   <h3>熱門商品</h3>
                   <ul>
-                    <li><router-link to="/new-arrivals">新品上市</router-link></li>
-                    <li><router-link to="/bestsellers">暢銷商品</router-link></li>
-                    <li><router-link to="/trending">當季流行</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { sort: 'newest' } }">最新商品</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { sort: 'popular' } }">熱銷排行</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { category: '季節精選' } }">季節精選</router-link></li>
                   </ul>
                 </div>
               </div>
             </div>
           </div>
-          
+
           <div class="nav-item">
-            <router-link to="/gift-ideas" class="nav-link">GIFT IDEAS</router-link>
+            <router-link :to="{ name: 'products' }" class="nav-link">禮贈品靈感</router-link>
             <div class="dropdown-menu">
               <div class="dropdown-columns">
                 <div class="dropdown-column">
-                  <h3>按收禮人</h3>
+                  <h3>按對象挑選</h3>
                   <ul>
-                    <li><router-link to="/gifts/women">Women</router-link></li>
-                    <li><router-link to="/gifts/men">Men</router-link></li>
-                    <li><router-link to="/gifts/best-friend">Best Friend</router-link></li>
-                    <li><router-link to="/gifts/teen">Teen</router-link></li>
-                    <li><router-link to="/gifts/kids">Kids</router-link></li>
-                    <li><router-link to="/gifts/babies">Babies</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { forGender: 'Women' } }">女性禮贈品</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { forGender: 'Men' } }">男性禮贈品</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { category: '送摯友' } }">送摯友</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { category: '青少年' } }">青少年禮贈</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { category: '兒童' } }">兒童禮贈</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { category: '嬰幼兒' } }">嬰幼兒禮贈</router-link></li>
                   </ul>
                 </div>
                 <div class="dropdown-column">
-                  <h3>按價格</h3>
+                  <h3>按預算範圍</h3>
                   <ul>
-                    <li><router-link to="/price/100-up">$100 and up</router-link></li>
-                    <li><router-link to="/price/under-100">Under $100</router-link></li>
-                    <li><router-link to="/price/under-50">Under $50</router-link></li>
-                    <li><router-link to="/price/under-25">Under $25</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { maxPrice: 25 } }">$25 以下</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { minPrice: 25, maxPrice: 50 } }">$25 ~ $50</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { minPrice: 50, maxPrice: 100 } }">$50 ~ $100</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { minPrice: 100, maxPrice: 200 } }">$100 ~ $200</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { minPrice: 200, maxPrice: 500 } }">$200 ~ $500</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { minPrice: 500, maxPrice: 1000 } }">$500 ~ $1000</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { minPrice: 1000 } }">$1000 以上</router-link></li>
                   </ul>
                 </div>
                 <div class="dropdown-column">
-                  <h3>按興趣</h3>
+                  <h3>按興趣領域</h3>
                   <ul>
-                    <li><router-link to="/interests/art-crafts">Art & Crafts</router-link></li>
-                    <li><router-link to="/interests/cooking">Cooking</router-link></li>
-                    <li><router-link to="/interests/gardening">Gardening</router-link></li>
-                    <li><router-link to="/interests/tech">Tech</router-link></li>
-                    <li><router-link to="/interests/sports">Sports</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { category: 'Tech' } }">科技</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { category: 'Home' } }">生活用品</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { category: 'Sports' } }">運動用品</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { category: 'Stationery' } }">辦公用品</router-link></li>
                   </ul>
                 </div>
               </div>
             </div>
           </div>
-          
+
           <div class="nav-item">
-            <router-link to="/women" class="nav-link">WOMEN</router-link>
+            <router-link :to="{ name: 'products', query: { forGender: 'Women' } }" class="nav-link">女性專屬禮贈</router-link>
           </div>
-          
+
           <div class="nav-item">
-            <router-link to="/men" class="nav-link">MEN</router-link>
+            <router-link :to="{ name: 'products', query: { forGender: 'Men' } }" class="nav-link">男性專屬禮贈</router-link>
           </div>
-          
+
           <div class="nav-item">
-            <router-link to="/baby-kids" class="nav-link">BABY & KIDS</router-link>
+            <router-link :to="{ name: 'products', query: { category: 'Kids' } }" class="nav-link">兒童與嬰幼兒禮贈</router-link>
           </div>
-          
+
           <div class="nav-item">
-            <router-link to="/occasions" class="nav-link">OCCASIONS & HOLIDAYS</router-link>
+            <router-link :to="{ name: 'products', query: { category: 'Occasions' } }" class="nav-link">節慶與活動專區</router-link>
           </div>
-          
+
           <div class="nav-item">
-            <router-link to="/brands" class="nav-link">BY BRAND</router-link>
+            <router-link :to="{ name: 'products', query: { category: 'Brand' } }" class="nav-link">品牌館</router-link>
           </div>
         </nav>
       </div>
