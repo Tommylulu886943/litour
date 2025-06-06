@@ -88,12 +88,14 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useProductStore } from '@/store/productStore';
+import { useCartStore } from '@/store/cartStore';
 
 export default {
   name: 'ProductDetailView',
   setup() {
     const route = useRoute();
     const productStore = useProductStore();
+    const cartStore = useCartStore();
     const quantity = ref(1);
     const showDebug = ref(true); // 開啟調試模式
     
@@ -128,6 +130,7 @@ export default {
     };
     
     const addToCart = () => {
+      cartStore.addToCart(productStore.product, quantity.value);
       alert(`已將 ${quantity.value} 個 "${productStore.product.name}" 加入購物車`);
     };
     
