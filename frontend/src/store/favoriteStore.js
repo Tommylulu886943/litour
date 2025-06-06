@@ -54,7 +54,7 @@ export const useFavoriteStore = defineStore('favorite', {
         console.error('添加收藏失敗:', error);
         this.error = '無法添加到收藏夾';
         // 還原本地狀態
-        this.favorites = this.favorites.filter(f => f.productId !== product._id);
+        this.favorites.splice(addedIndex, 1);
       }
     },
     
