@@ -66,7 +66,7 @@
             <div class="info-content">
               <div class="info-label">LINE 官方帳號</div>
               <div class="info-text line-qr">
-                <img src="https://via.placeholder.com/200x200?text=LINE+QR" alt="LINE QR Code">
+                <img src="/src/assets/images/line-qr-code.png" alt="LINE QR Code">
               </div>
             </div>
           </div>
