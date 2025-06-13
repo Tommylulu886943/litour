@@ -40,9 +40,12 @@
           :images="filteredImages"
           :alt="product.name"
         />
-        <div v-else class="placeholder-image">
-          <span>目前無照片</span>
-        </div>
+        <img
+          v-else
+          class="placeholder-image"
+          :src="noImage"
+          alt="目前無照片"
+        />
       </div>
       
       <div class="product-info">
@@ -130,6 +133,7 @@ import { useProductStore } from '@/store/productStore';
 import { useCartStore } from '@/store/cartStore';
 import { useUserStore } from '@/store/userStore';
 import ImageGallery from '@/components/ImageGallery.vue';
+import noImage from '@/assets/images/no-image.svg';
 
 export default {
   name: 'ProductDetailView',
@@ -203,7 +207,8 @@ export default {
       refreshData,
       showFullDescription,
       truncatedDescription,
-      isAdmin
+      isAdmin,
+      noImage
     };
   }
 }
@@ -275,12 +280,9 @@ export default {
 .placeholder-image {
   width: 100%;
   height: 500px;
+  object-fit: contain;
   background-color: #f2f2f2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #999;
-  font-size: 1.2rem;
+  border-radius: 8px;
 }
 
 .product-info {
