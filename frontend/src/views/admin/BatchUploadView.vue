@@ -284,7 +284,8 @@
       
       // 下載模板
       const downloadTemplate = () => {
-        const templateUrl = '/api/admin/download-template';
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+        const templateUrl = `${baseUrl}/api/admin/download-template`;
         window.open(templateUrl, '_blank');
       };
       
