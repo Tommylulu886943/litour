@@ -1,10 +1,14 @@
 <template>
   <div class="product-detail container">
-    <button class="toggle-debug-btn" @click="showDebug = !showDebug">
+    <button
+      v-if="isAdmin"
+      class="toggle-debug-btn"
+      @click="showDebug = !showDebug"
+    >
       {{ showDebug ? '隱藏調試' : '顯示調試' }}
     </button>
     <!-- 調試信息 -->
-    <div class="debug-info" v-if="showDebug">
+    <div class="debug-info" v-if="isAdmin && showDebug">
       <h3>調試信息</h3>
       <p>產品ID: {{ $route.params.id }}</p>
       <p>載入狀態: {{ loading ? '載入中' : '載入完成' }}</p>
@@ -32,12 +36,12 @@
     <div v-else class="product-detail-content">
       <div class="product-gallery">
         <ImageGallery
-          v-if="product.images && product.images.length > 0"
-          :images="product.images"
+          v-if="filteredImages.length > 0"
+          :images="filteredImages"
           :alt="product.name"
         />
         <div v-else class="placeholder-image">
-          <span>無圖片</span>
+          <span>目前無照片</span>
         </div>
       </div>
       
@@ -124,6 +128,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useProductStore } from '@/store/productStore';
 import { useCartStore } from '@/store/cartStore';
+import { useUserStore } from '@/store/userStore';
 import ImageGallery from '@/components/ImageGallery.vue';
 
 export default {
@@ -135,9 +140,16 @@ export default {
     const route = useRoute();
     const productStore = useProductStore();
     const cartStore = useCartStore();
+    const userStore = useUserStore();
     const quantity = ref(1);
     const showDebug = ref(false); // 預設隱藏調試模式
     const showFullDescription = ref(false);
+
+    const isAdmin = computed(() => userStore.isAdmin);
+
+    const filteredImages = computed(() => {
+      return (productStore.product?.images || []).filter(img => !!img);
+    });
     const truncatedDescription = computed(() => {
       const desc = productStore.product?.description || '';
       return desc.length > 120 ? desc.slice(0, 120) + '...' : desc;
@@ -182,6 +194,7 @@ export default {
       loading: computed(() => productStore.loading),
       error: computed(() => productStore.error),
       product: computed(() => productStore.product),
+      filteredImages,
       quantity,
       increaseQuantity,
       decreaseQuantity,
@@ -189,7 +202,8 @@ export default {
       showDebug,
       refreshData,
       showFullDescription,
-      truncatedDescription
+      truncatedDescription,
+      isAdmin
     };
   }
 }
