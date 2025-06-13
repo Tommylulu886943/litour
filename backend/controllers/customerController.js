@@ -10,9 +10,41 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+exports.createCustomer = async (req, res) => {
+  try {
+    const { name, email, password, phone, company } = req.body;
+
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ message: '該電子郵件已被註冊' });
+    }
+
+    const user = await User.create({ name, email, password, phone, company });
+
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      company: user.company
+    });
+  } catch (error) {
+    console.error('創建客戶錯誤:', error);
+    res.status(500).json({ message: '創建客戶失敗', error: error.message });
+  }
+};
+
 exports.listCustomers = async (req, res) => {
   try {
-    const users = await User.find({ role: 'user' }).select('-password');
+    const filter = { role: 'user' };
+    if (req.query.q) {
+      const q = req.query.q;
+      filter.$or = [
+        { name: { $regex: q, $options: 'i' } },
+        { email: { $regex: q, $options: 'i' } }
+      ];
+    }
+    const users = await User.find(filter).select('-password');
     res.json(users);
   } catch (error) {
     console.error('獲取客戶列表錯誤:', error);
