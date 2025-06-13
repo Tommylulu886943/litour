@@ -86,6 +86,12 @@ const router = createRouter({
       name: 'admin-batch-upload',
       component: () => import('../views/admin/BatchUploadView.vue'),
       meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
+      path: '/admin/customers',
+      name: 'admin-customers',
+      component: () => import('../views/admin/CustomerCenterView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true }
     }
   ]
 });
