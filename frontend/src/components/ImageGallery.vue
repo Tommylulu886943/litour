@@ -4,6 +4,7 @@
       :src="currentImage"
       :alt="alt"
       class="main-image"
+      @error="onImgError"
     />
     <div v-if="images.length > 1" class="thumbnails">
       <img
@@ -11,6 +12,7 @@
         :key="index"
         :src="img"
         :alt="alt + ' ' + (index + 1)"
+        @error="onImgError"
         @click="setImage(index)"
         :class="['thumbnail', { active: index === currentIndex }]"
       />
@@ -20,6 +22,7 @@
 
 <script>
 import { ref, computed } from 'vue';
+import noImage from '@/assets/images/no-image.svg';
 
 export default {
   name: 'ImageGallery',
@@ -40,10 +43,16 @@ export default {
     };
     const currentImage = computed(() => props.images[currentIndex.value] || '');
 
+    const onImgError = (e) => {
+      e.target.onerror = null;
+      e.target.src = noImage;
+    };
+
     return {
       currentIndex,
       setImage,
-      currentImage
+      currentImage,
+      onImgError
     };
   }
 };
