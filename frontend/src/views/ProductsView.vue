@@ -129,7 +129,7 @@
           
           <!-- 性別 -->
           <div class="filter-section">
-            <h3 class="filter-title">適用性別</h3>
+            <h3 class="filter-title">性別</h3>
             <div class="filter-options">
               <div class="filter-option">
                 <input 
@@ -149,7 +149,7 @@
                   v-model="searchParams.forGender"
                   @change="fetchProducts"
                 >
-                <label for="gender-men">男士</label>
+                <label for="gender-men">男生</label>
               </div>
               <div class="filter-option">
                 <input 
@@ -159,7 +159,7 @@
                   v-model="searchParams.forGender"
                   @change="fetchProducts"
                 >
-                <label for="gender-women">女士</label>
+                <label for="gender-women">女性</label>
               </div>
               <div class="filter-option">
                 <input 
@@ -174,9 +174,9 @@
             </div>
           </div>
           
-          <!-- 個人化選項 -->
+          <!-- 客製化選項 -->
           <div class="filter-section">
-            <h3 class="filter-title">個人化</h3>
+            <h3 class="filter-title">客製化</h3>
             <div class="filter-options">
               <div class="filter-option">
                 <input 
@@ -196,7 +196,7 @@
                   v-model="searchParams.isPersonalized"
                   @change="fetchProducts"
                 >
-                <label for="personalized-yes">可個人化</label>
+                <label for="personalized-yes">可客製</label>
               </div>
               <div class="filter-option">
                 <input 
@@ -206,7 +206,7 @@
                   v-model="searchParams.isPersonalized"
                   @change="fetchProducts"
                 >
-                <label for="personalized-no">不可個人化</label>
+                <label for="personalized-no">不可客製</label>
               </div>
             </div>
           </div>
@@ -369,7 +369,7 @@ export default {
         filterStore.setSearchParam('forGender', query.forGender);
       }
       
-      // 個人化選項
+      // 客製化選項
       if (query.isPersonalized !== undefined) {
         filterStore.setSearchParam('isPersonalized', query.isPersonalized === 'true');
       }

@@ -143,11 +143,11 @@
                 </div>
                 
                 <div class="form-group">
-                  <label for="forGender">適用性別</label>
+                  <label for="forGender">性別</label>
                   <select id="forGender" v-model="product.forGender">
                     <option value="Unisex">通用</option>
-                    <option value="Men">男士</option>
-                    <option value="Women">女士</option>
+                    <option value="Men">男生</option>
+                    <option value="Women">女性</option>
                     <option value="Kids">兒童</option>
                   </select>
                 </div>

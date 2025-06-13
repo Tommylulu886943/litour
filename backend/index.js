@@ -163,7 +163,7 @@ app.post('/api/seed', async (req, res) => {
         forGender: 'Unisex'
       },
       {
-        name: '女士絲巾',
+        name: '女性絲巾',
         description: '100%真絲材質，柔軟親膚，多種圖案可選',
         price: 980,
         discountPrice: 880,
@@ -178,7 +178,7 @@ app.post('/api/seed', async (req, res) => {
           size: '90x90cm'
         },
         minimumOrderQuantity: 1,
-        tags: ['絲巾', '配飾', '女士禮品'],
+        tags: ['絲巾', '配飾', '女性禮品'],
         rating: 4.9,
         reviews: 42,
         isPersonalized: false,
@@ -249,7 +249,7 @@ app.post('/api/seed', async (req, res) => {
         forGender: 'Unisex'
       },
       {
-        name: '男士皮帶',
+        name: '男生皮帶',
         description: '頭層牛皮製作，經典款式，商務休閒兩相宜',
         price: 750,
         stock: 80,
@@ -263,7 +263,7 @@ app.post('/api/seed', async (req, res) => {
           length: '115cm'
         },
         minimumOrderQuantity: 1,
-        tags: ['皮帶', '男士', '配飾'],
+        tags: ['皮帶', '男生', '配飾'],
         rating: 4.8,
         reviews: 22,
         isPersonalized: false,
@@ -291,7 +291,7 @@ app.post('/api/seed', async (req, res) => {
         forGender: 'Unisex'
       },
       {
-        name: '女士手提包',
+        name: '女性手提包',
         description: '優質PU皮革，時尚實用，多色可選',
         price: 1280,
         discountPrice: 1080,
@@ -306,7 +306,7 @@ app.post('/api/seed', async (req, res) => {
           size: '30x22x10cm'
         },
         minimumOrderQuantity: 1,
-        tags: ['手提包', '女士', '時尚'],
+        tags: ['手提包', '女性', '時尚'],
         rating: 4.9,
         reviews: 38,
         isPersonalized: false,
@@ -377,7 +377,7 @@ app.post('/api/seed', async (req, res) => {
         forGender: 'Unisex'
       },
       {
-        name: '男士領帶',
+        name: '男生領帶',
         description: '100%桑蠶絲，多款花色，商務正裝必備',
         price: 680,
         stock: 90,
@@ -391,7 +391,7 @@ app.post('/api/seed', async (req, res) => {
           width: '8cm'
         },
         minimumOrderQuantity: 2,
-        tags: ['領帶', '男士', '商務'],
+        tags: ['領帶', '男生', '商務'],
         rating: 4.7,
         reviews: 25,
         isPersonalized: false,

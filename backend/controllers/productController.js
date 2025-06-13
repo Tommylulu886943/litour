@@ -56,7 +56,7 @@ exports.getProducts = async (req, res) => {
       query.forGender = forGender;
     }
 
-    // 個人化選項
+    // 客製化選項
     if (isPersonalized !== undefined) {
       query.isPersonalized = isPersonalized === 'true';
     }

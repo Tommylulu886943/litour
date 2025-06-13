@@ -88,8 +88,8 @@
                 <div class="dropdown-column">
                   <h3>按對象挑選</h3>
                   <ul>
-                    <li><router-link :to="{ name: 'products', query: { forGender: 'Women' } }">女性禮贈品</router-link></li>
-                    <li><router-link :to="{ name: 'products', query: { forGender: 'Men' } }">男性禮贈品</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { forGender: '送女生' } }">送女生禮品</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { forGender: '送男生性' } }">送男生禮品</router-link></li>
                     <li><router-link :to="{ name: 'products', query: { category: '送摯友' } }">送摯友</router-link></li>
                     <li><router-link :to="{ name: 'products', query: { category: '青少年' } }">青少年禮贈</router-link></li>
                     <li><router-link :to="{ name: 'products', query: { category: '兒童' } }">兒童禮贈</router-link></li>
@@ -99,13 +99,13 @@
                 <div class="dropdown-column">
                   <h3>按預算範圍</h3>
                   <ul>
-                    <li><router-link :to="{ name: 'products', query: { maxPrice: 25 } }">$25 以下</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { minPrice: 0, maxPrice: 25 } }">$25 以下</router-link></li>
                     <li><router-link :to="{ name: 'products', query: { minPrice: 25, maxPrice: 50 } }">$25 ~ $50</router-link></li>
                     <li><router-link :to="{ name: 'products', query: { minPrice: 50, maxPrice: 100 } }">$50 ~ $100</router-link></li>
                     <li><router-link :to="{ name: 'products', query: { minPrice: 100, maxPrice: 200 } }">$100 ~ $200</router-link></li>
                     <li><router-link :to="{ name: 'products', query: { minPrice: 200, maxPrice: 500 } }">$200 ~ $500</router-link></li>
                     <li><router-link :to="{ name: 'products', query: { minPrice: 500, maxPrice: 1000 } }">$500 ~ $1000</router-link></li>
-                    <li><router-link :to="{ name: 'products', query: { minPrice: 1000 } }">$1000 以上</router-link></li>
+                    <li><router-link :to="{ name: 'products', query: { minPrice: 1000, maxPrice: 9999 } }">$1000 以上</router-link></li>
                   </ul>
                 </div>
                 <div class="dropdown-column">

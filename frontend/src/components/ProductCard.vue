@@ -270,7 +270,7 @@ export default {
   height: 22px;
 }
 
-/* 折扣和個人化標籤 */
+/* 折扣和客製化標籤 */
 .discount-badge,
 .personalized-badge {
   position: absolute;
