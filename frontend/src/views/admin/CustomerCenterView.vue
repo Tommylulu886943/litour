@@ -96,13 +96,16 @@ export default {
         phone: form.phone,
         company: form.company,
       };
-      const success = await store.createCustomer(payload);
-      if (success) {
+      const { ok, message } = await store.createCustomer(payload);
+      if (ok) {
+        await store.fetchCustomers(search.value);
         showForm.value = false;
         form.name = '';
         form.email = '';
         form.phone = '';
         form.company = '';
+      } else if (message) {
+        alert(message);
       }
     };
 

@@ -29,10 +29,12 @@ export const useCustomerStore = defineStore('customers', {
       try {
         const response = await axios.post('/api/customers', data);
         this.customers.push(response.data);
-        return true;
+        this.error = null;
+        return { ok: true };
       } catch (error) {
         console.error('創建客戶失敗:', error);
-        return false;
+        this.error = error.response?.data?.message || '創建客戶失敗';
+        return { ok: false, message: this.error };
       }
     },
 
