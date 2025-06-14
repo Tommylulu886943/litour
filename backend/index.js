@@ -59,6 +59,8 @@ app.use('/api/products', productRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/customers', customerRoutes);
+// 兼容舊路由，管理員路徑也指向同一組客戶功能
+app.use('/api/admin/customers', customerRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/contact', contactRoutes);
