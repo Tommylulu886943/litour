@@ -36,7 +36,10 @@
       </div>
     </form>
 
-    <div v-if="loading" class="loading">載入中...</div>
+    <div v-if="loading" class="loading">
+      <div class="loading-spinner"></div>
+      <p>載入中...</p>
+    </div>
     <div v-else>
       <table class="customer-table">
         <thead>
@@ -188,6 +191,31 @@ export default {
 .cancel-btn {
   background-color: #f5f5f5;
   color: #333;
+}
+
+.page-title {
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 2rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 50px 0;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(232, 74, 95, 0.1);
+  border-left-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 15px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .customer-table {

@@ -12,7 +12,7 @@ export const useCustomerStore = defineStore('customers', {
     async fetchCustomers(query = '') {
       this.loading = true;
       try {
-        const response = await axios.get('/api/admin/customers', {
+        const response = await axios.get('/api/customers', {
           params: query ? { q: query } : {}
         });
         this.customers = response.data;
@@ -27,7 +27,7 @@ export const useCustomerStore = defineStore('customers', {
 
     async createCustomer(data) {
       try {
-        const response = await axios.post('/api/admin/customers', data);
+        const response = await axios.post('/api/customers', data);
         this.customers.push(response.data);
         this.error = null;
         return { ok: true };
@@ -40,7 +40,7 @@ export const useCustomerStore = defineStore('customers', {
 
     async deleteCustomer(id) {
       try {
-        await axios.delete(`/api/admin/customers/${id}`);
+        await axios.delete(`/api/customers/${id}`);
         this.customers = this.customers.filter(c => c._id !== id);
       } catch (error) {
         console.error('刪除客戶失敗:', error);
