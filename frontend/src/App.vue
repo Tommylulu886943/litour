@@ -48,6 +48,7 @@
               
               <div v-show="showUserMenu" class="user-menu">
                 <router-link to="/profile" class="menu-item">個人中心</router-link>
+                <router-link v-if="isAdmin" to="/admin/customers" class="menu-item">客戶中心</router-link>
                 <router-link v-if="isAdmin" to="/admin/batch-upload" class="menu-item">批量上傳</router-link>
                 <a href="#" @click.prevent="logout" class="menu-item">登出</a>
               </div>

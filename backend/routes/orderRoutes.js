@@ -1,7 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/authMiddleware');
+const { protect, admin } = require('../middleware/authMiddleware');
 const Order = require('../models/Order');
+
+// 管理員獲取所有訂單，可根據狀態或用戶搜尋
+router.get('/', protect, admin, async (req, res) => {
+  try {
+    const filter = {};
+    if (req.query.status) {
+      filter.status = req.query.status;
+    }
+    if (req.query.user) {
+      filter.user = req.query.user;
+    }
+    const orders = await Order.find(filter).populate('user', 'name email');
+    res.json(orders);
+  } catch (error) {
+    console.error('獲取訂單列表錯誤:', error);
+    res.status(500).json({ message: '獲取訂單失敗', error: error.message });
+  }
+});
 
 // 創建訂單
 router.post('/', protect, async (req, res) => {
@@ -72,6 +90,43 @@ router.get('/:id', protect, async (req, res) => {
   }
 });
 
+// 編輯訂單（擁有者或管理員）
+router.put('/:id', protect, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({ message: '訂單不存在' });
+    }
+
+    if (order.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({ message: '沒有權限' });
+    }
+
+    Object.assign(order, req.body);
+    const updatedOrder = await order.save();
+    res.json(updatedOrder);
+  } catch (error) {
+    console.error('更新訂單錯誤:', error);
+    res.status(500).json({ message: '更新訂單失敗', error: error.message });
+  }
+});
+
+// 更新訂單狀態（管理員）
+router.put('/:id/status', protect, admin, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({ message: '訂單不存在' });
+    }
+    order.status = req.body.status || order.status;
+    const updatedOrder = await order.save();
+    res.json(updatedOrder);
+  } catch (error) {
+    console.error('更新訂單狀態錯誤:', error);
+    res.status(500).json({ message: '更新訂單狀態失敗', error: error.message });
+  }
+});
+
 // 更新訂單為已付款
 router.put('/:id/pay', protect, async (req, res) => {
   try {
@@ -97,6 +152,21 @@ router.put('/:id/pay', protect, async (req, res) => {
   } catch (error) {
     console.error('更新訂單付款狀態錯誤:', error);
     res.status(500).json({ message: '更新訂單付款狀態失敗', error: error.message });
+  }
+});
+
+// 刪除訂單（管理員）
+router.delete('/:id', protect, admin, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({ message: '訂單不存在' });
+    }
+    await order.remove();
+    res.json({ message: '訂單已刪除' });
+  } catch (error) {
+    console.error('刪除訂單錯誤:', error);
+    res.status(500).json({ message: '刪除訂單失敗', error: error.message });
   }
 });
 
